@@ -1,6 +1,7 @@
 #include <iostream>
 #include "bump_log.h"
 #include "bump_config.h"
+#include "bump_app.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,11 +17,20 @@ int main(int argc, char *argv[])
     }
     #endif
 
-    LOG_INFO("Program initialized");
-
     bump::Config config;
     if(!config.load(argv[1])) {
         LOG_ERROR("Failed to read config from %s", argv[1]);
+        return 1;
+    }
+
+    if(!bump::App::initSingleton(config)) {
+        LOG_ERROR("Failed to initialize App");
+        return 1;
+    }
+
+    bump::App& app = bump::App::getSingleton();
+    if(!app.run()) {
+        LOG_ERROR("Something wrong happened during App::run");
         return 1;
     }
 

@@ -21,3 +21,7 @@ check_dir:
 
 clean:
 	rm -f build/*
+
+run:
+	cd scripts; \
+	./run.sh
