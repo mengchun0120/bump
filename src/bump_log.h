@@ -1,5 +1,5 @@
-#ifndef INCLUDE_LOG
-#define INCLUDE_LOG
+#ifndef INCLUDE_BUMP_LOG
+#define INCLUDE_BUMP_LOG
 
 #include <stdio.h>
 

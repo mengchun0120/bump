@@ -1,5 +1,6 @@
 #include <iostream>
 #include "bump_log.h"
+#include "bump_config.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,12 @@ int main(int argc, char *argv[])
     #endif
 
     LOG_INFO("Program initialized");
+
+    bump::Config config;
+    if(!config.load(argv[1])) {
+        LOG_ERROR("Failed to read config from %s", argv[1]);
+        return 1;
+    }
 
     return 0;
 }
