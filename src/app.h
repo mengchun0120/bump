@@ -1,9 +1,9 @@
-#ifndef INCLUDE_BUMP_APP
-#define INCLUDE_BUMP_APP
+#ifndef INCLUDE_APP
+#define INCLUDE_APP
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "bump_config.h"
+#include "bumpshaderprogram.h"
 
 namespace bump {
 
@@ -11,18 +11,18 @@ class App {
 public:
     static App& getSingleton();
 
-    static bool initSingleton(const Config& cfg);
+    static bool initSingleton();
 
     ~App();
-
-    bool init(const Config& cfg);
 
     bool run();
 
 private:
     App();
 
-    bool initWindow(const Config& cfg);
+    bool init();
+
+    bool initWindow();
 
     bool initOpenGL();
 
@@ -30,6 +30,7 @@ private:
 
 private:
     GLFWwindow* m_window;
+    BumpShaderProgram* m_program;
 };
 
 } // end of namespace bump

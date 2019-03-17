@@ -2,11 +2,27 @@
 #include <cstdlib>
 #include <cstring>
 #include <vector>
-#include "bump_log.h"
-#include "bump_utils.h"
-#include "bump_config.h"
+#include <memory>
+#include <stdexcept>
+#include "log.h"
+#include "utils.h"
+#include "config.h"
 
 namespace bump {
+
+enum ConfigValueType {
+    TYPE_INT,
+    TYPE_STRING,
+    TYPE_DOUBLE
+};
+
+struct ConfigItem {
+    const char* m_name;
+    ConfigValueType m_type;
+    void* m_mem;
+    bool m_required;
+    bool m_set;
+};
 
 bool parseLine(char *line, char **name, char **value)
 {
@@ -38,7 +54,7 @@ bool parseLine(char *line, char **name, char **value)
     return true;
 }
 
-int findConfigItem(const std::vector<Config::ConfigItem> items, const char* name)
+int findConfigItem(const std::vector<ConfigItem> items, const char* name)
 {
     unsigned int itemCount = items.size();
     for(unsigned i = 0; i < itemCount; ++i) {
@@ -50,25 +66,25 @@ int findConfigItem(const std::vector<Config::ConfigItem> items, const char* name
     return -1;
 }
 
-void setValue(Config::ConfigItem& item, const char *value)
+void setValue(ConfigItem& item, const char *value)
 {
     switch(item.m_type) {
-    case Config::TYPE_INT:
+    case TYPE_INT:
         *((int *)(item.m_mem)) = atoi(value);
         item.m_set = 1;
         break;
-    case Config::TYPE_DOUBLE:
+    case TYPE_DOUBLE:
         *((double *)(item.m_mem)) = atof(value);
         item.m_set = 1;
         break;
-    case Config::TYPE_STRING:
+    case TYPE_STRING:
         *((std::string *)item.m_mem) = value;
         item.m_set = 1;
         break;
     }
 }
 
-bool validateConfigItems(const std::vector<Config::ConfigItem> items)
+bool validateConfigItems(const std::vector<ConfigItem> items)
 {
     unsigned itemCount = items.size();
     for(unsigned int i = 0; i < itemCount; ++i) {
@@ -81,16 +97,40 @@ bool validateConfigItems(const std::vector<Config::ConfigItem> items)
     return true;
 }
 
-Config::Config()
+std::shared_ptr<Config> g_config;
+
+Config& Config::getSingleton()
+{
+    return *g_config;
+}
+
+bool Config::initSingleton(const char* fileName)
+{
+    if(g_config) {
+        LOG_ERROR("Config already initialized");
+        return false;
+    }
+
+    try {
+        g_config.reset(new Config(fileName));
+        return true;
+    } catch(const std::exception& e) {
+        return false;
+    }
+}
+
+
+Config::Config(const char *fileName)
 : m_width(0)
 , m_height(0)
 {
-
+    if(!load(fileName)) {
+        throw std::runtime_error("Failed to load config");
+    }
 }
 
 Config::~Config()
 {
-
 }
 
 bool Config::load(const char* fileName)

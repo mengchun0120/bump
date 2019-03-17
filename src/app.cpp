@@ -1,6 +1,7 @@
 #include <memory>
-#include "bump_log.h"
-#include "bump_app.h"
+#include "log.h"
+#include "config.h"
+#include "app.h"
 
 namespace bump {
 
@@ -11,27 +12,29 @@ App& App::getSingleton()
     return *g_app;
 }
 
-bool App::initSingleton(const Config& cfg)
+bool App::initSingleton()
 {
     if(g_app) {
         LOG_ERROR("App singleton already initialized");
         return false;
     }
 
-    App *app = new App();
-    if(!app->init(cfg)) {
-        LOG_ERROR("Failed to initialize App");
-        delete app;
+    try {
+        g_app.reset(new App());
+        return true;
+    } catch(const std::exception& e) {
+        LOG_ERROR("Exception happened %s", e.what());
         return false;
     }
-
-    g_app.reset(app);
-    return true;
 }
 
 App::App()
 : m_window(nullptr)
+, m_program(nullptr)
 {
+    if(!init()) {
+        throw std::runtime_error("Failed to initialize App");
+    }
 }
 
 App::~App()
@@ -39,11 +42,15 @@ App::~App()
     if(m_window != nullptr) {
         glfwTerminate();
     }
+
+    if(m_program != nullptr) {
+        delete m_program;
+    }
 }
 
-bool App::init(const Config& cfg)
+bool App::init()
 {
-    if(!initWindow(cfg)) {
+    if(!initWindow()) {
         LOG_ERROR("Failed to initialize window");
         return false;
     }
@@ -61,7 +68,7 @@ bool App::run()
     while(glfwWindowShouldClose(m_window) == 0) {
         if(!update()) {
             LOG_ERROR("Failed to update");
-            break;
+            return false;
         }
 
         glfwSwapBuffers(m_window);
@@ -77,7 +84,7 @@ bool App::update()
     return true;
 }
 
-bool App::initWindow(const Config& cfg)
+bool App::initWindow()
 {
     LOG_INFO("Initializing window");
 
@@ -92,7 +99,9 @@ bool App::initWindow(const Config& cfg)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    m_window = glfwCreateWindow(cfg.m_width, cfg.m_height, cfg.m_title.c_str(), NULL, NULL);
+    Config& config = Config::getSingleton();
+
+    m_window = glfwCreateWindow(config.m_width, config.m_height, config.m_title.c_str(), NULL, NULL);
     if(m_window == nullptr){
         LOG_ERROR("Failed to open GLFW window");
         return false;
@@ -116,6 +125,15 @@ bool App::initOpenGL()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    try {
+        Config& config = Config::getSingleton();
+        m_program = new BumpShaderProgram(config.m_bumpVertexShaderFile, config.m_bumpFragShaderFile);
+    } catch(const std::exception& e) {
+        LOG_ERROR("Exception happened: %s", e.what());
+        return false;
+    }
+
     return true;
 }
 

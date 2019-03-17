@@ -1,7 +1,7 @@
 #include <iostream>
-#include "bump_log.h"
-#include "bump_config.h"
-#include "bump_app.h"
+#include "log.h"
+#include "config.h"
+#include "app.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,13 +17,12 @@ int main(int argc, char *argv[])
     }
     #endif
 
-    bump::Config config;
-    if(!config.load(argv[1])) {
+    if(!bump::Config::initSingleton(argv[1])) {
         LOG_ERROR("Failed to read config from %s", argv[1]);
         return 1;
     }
 
-    if(!bump::App::initSingleton(config)) {
+    if(!bump::App::initSingleton()) {
         LOG_ERROR("Failed to initialize App");
         return 1;
     }

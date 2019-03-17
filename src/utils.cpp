@@ -2,8 +2,8 @@
 #include <sstream>
 #include <cctype>
 #include <cstring>
-#include "bump_log.h"
-#include "bump_utils.h"
+#include "log.h"
+#include "utils.h"
 
 namespace bump {
 

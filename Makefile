@@ -23,5 +23,5 @@ clean:
 	rm -f build/*
 
 run:
-	cd scripts; \
+	cd res; \
 	./run.sh

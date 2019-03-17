@@ -3,7 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
-#include "bump_log.h"
+#include "log.h"
 
 namespace bump {
 
