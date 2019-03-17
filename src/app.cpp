@@ -70,12 +70,12 @@ bool App::run()
     updateOpenGLForUse();
 
     Rectangle rect(0.0f, 0.0f, 100.0f, 100.0f);
+    Circle circle(0.0f, 0.0f, 50.f, 40);
+    
     GLfloat ref[] = {100.f, 100.f};
     GLfloat ref1[] = {400.0f, 400.f};
     GLfloat fillColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
     GLfloat borderColor[] = {0.0f, 0.0f, 1.0f, 1.0f};
-
-    Circle circle(0.0f, 0.0f, 50.f, 40);
 
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);

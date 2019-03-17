@@ -6,7 +6,7 @@
 namespace bump {
 
 Circle::Circle(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices)
-: VertexArray()
+: Polygon()
 , m_centerX(centerX)
 , m_centerY(centerY)
 , m_radius(radius)
@@ -39,30 +39,6 @@ bool Circle::init(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int
     }
 
     return load(vertices, numVertices+2, nullptr, 0);
-}
-
-void Circle::draw(BumpShaderProgram& program, const GLfloat *ref,
-                  const GLfloat* fillColor, const GLfloat* borderColor, GLfloat borderWidth)
-{
-    if(ref != nullptr) {
-        program.setUseObjRef(true);
-        program.setObjRef(ref);
-    } else {
-        program.setUseObjRef(false);
-    }
-
-    program.setPosition(*this);
-
-    if(fillColor != nullptr) {
-        program.setColor(fillColor);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, m_numVertices);
-    }
-
-    if(borderColor != nullptr) {
-        glLineWidth(borderWidth);
-        program.setColor(borderColor);
-        glDrawArrays(GL_LINE_LOOP, 1, m_numVertices-1);
-    }
 }
 
 } // end of namespace bump

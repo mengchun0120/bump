@@ -1,11 +1,11 @@
 #ifndef INCLUDE_RECTANGLE
 #define INCLUDE_RECTANGLE
 
-#include "bumpshaderprogram.h"
+#include "polygon.h"
 
 namespace bump {
 
-class Rectangle: public VertexArray {
+class Rectangle: public Polygon {
 public:
     Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
 
@@ -30,9 +30,6 @@ public:
     {
         return m_height;
     }
-
-    void draw(BumpShaderProgram& program, const GLfloat *ref,
-              const GLfloat* fillColor, const GLfloat* borderColor, GLfloat borderWidth);
 
 protected:
     GLfloat m_x;

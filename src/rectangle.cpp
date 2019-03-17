@@ -5,7 +5,7 @@
 namespace bump {
 
 Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
-: VertexArray()
+: Polygon()
 , m_x(x)
 , m_y(y)
 , m_width(width)
@@ -27,30 +27,6 @@ Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
 
 Rectangle::~Rectangle()
 {
-}
-
-void Rectangle::draw(BumpShaderProgram& program, const GLfloat *ref,
-                     const GLfloat* fillColor, const GLfloat* borderColor, GLfloat borderWidth)
-{
-    if(ref != nullptr) {
-        program.setUseObjRef(true);
-        program.setObjRef(ref);
-    } else {
-        program.setUseObjRef(false);
-    }
-
-    program.setPosition(*this);
-
-    if(fillColor != nullptr) {
-        program.setColor(fillColor);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
-    }
-
-    if(borderColor != nullptr) {
-        glLineWidth(borderWidth);
-        program.setColor(borderColor);
-        glDrawArrays(GL_LINE_LOOP, 1, 5);
-    }
 }
 
 } // end of namespace bump

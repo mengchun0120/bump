@@ -11,15 +11,15 @@ public:
 
     VertexArray(const float* vertices,
                 unsigned int numVertices,
-                const unsigned short* indices,
-                unsigned int numIndices);
+                const unsigned short* indices=nullptr,
+                unsigned int numIndices=0);
 
     virtual ~VertexArray();
 
     bool load(const float* vertices,
               unsigned int numVertices,
-              const unsigned short* indices,
-              unsigned int numIndices);
+              const unsigned short* indices=nullptr,
+              unsigned int numIndices=0);
 
     unsigned int numVertices() const
     {

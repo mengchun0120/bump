@@ -1,13 +1,11 @@
 #ifndef INCLUDE_CIRCLE
 #define INCLUDE_CIRCLE
 
-#include "constants.h"
-#include "vertexarray.h"
-#include "bumpshaderprogram.h"
+#include "polygon.h"
 
 namespace bump {
 
-class Circle: public VertexArray {
+class Circle: public Polygon {
 public:
     Circle(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices);
 
@@ -27,9 +25,6 @@ public:
     {
         return m_radius;
     }
-
-    void draw(BumpShaderProgram& program, const GLfloat *ref,
-              const GLfloat* fillColor, const GLfloat* borderColor, GLfloat borderWidth);
 
 private:
     bool init(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices);
