@@ -6,6 +6,10 @@ namespace bump {
 
 Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
 : VertexArray()
+, m_x(x)
+, m_y(y)
+, m_width(width)
+, m_height(height)
 {
     GLfloat vertices[] = {
         x+width/2.0f, y+height/2.0f,

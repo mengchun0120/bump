@@ -2,6 +2,7 @@
 #include "log.h"
 #include "config.h"
 #include "rectangle.h"
+#include "circle.h"
 #include "app.h"
 
 namespace bump {
@@ -70,13 +71,17 @@ bool App::run()
 
     Rectangle rect(0.0f, 0.0f, 100.0f, 100.0f);
     GLfloat ref[] = {100.f, 100.f};
+    GLfloat ref1[] = {400.0f, 400.f};
     GLfloat fillColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
     GLfloat borderColor[] = {0.0f, 0.0f, 1.0f, 1.0f};
-    
+
+    Circle circle(0.0f, 0.0f, 50.f, 40);
+
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         rect.draw(*m_program, ref, fillColor, borderColor, 1.0f);
+        circle.draw(*m_program, ref1, fillColor, borderColor, 1.0f);
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();

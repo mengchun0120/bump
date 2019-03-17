@@ -66,6 +66,7 @@ bool VertexArray::load(const float* vertices,
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, numVertices * Constants::VERTEX_SIZE, vertices, GL_STATIC_DRAW);
+    m_numVertices = numVertices;
 
     if(indices != nullptr) {
         glGenBuffers(1, &m_ebo);
@@ -76,7 +77,9 @@ bool VertexArray::load(const float* vertices,
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(unsigned short), indices, GL_STATIC_DRAW);
+        m_numIndices = numIndices;
     }
+
 
     return true;
 }
