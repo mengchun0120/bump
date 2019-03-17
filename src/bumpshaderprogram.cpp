@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "config.h"
 #include "log.h"
 #include "constants.h"
@@ -9,46 +8,30 @@ namespace bump {
 BumpShaderProgram::BumpShaderProgram(const std::string& vertexShaderFile, const std::string& fragShaderFile)
 : ShaderProgram(vertexShaderFile, fragShaderFile)
 {
-    if(!loadParam()) {
-        throw std::runtime_error("Failed to load param");
-    }
+    loadParam();
 }
 
 BumpShaderProgram::~BumpShaderProgram()
 {
 }
 
-bool BumpShaderProgram::loadParam()
+void BumpShaderProgram::loadParam()
 {
-    GLenum err;
-
-    m_posLocation = glGetAttribLocation(m_program, "pos");
-    err = glGetError();
-    if(GL_NO_ERROR != err) {
-        LOG_ERROR("Failed to get attribute location for pos: %d", static_cast<int>(err));
-        return false;
-    }
-
+    m_positionLocation = glGetAttribLocation(m_program, "position");
+    m_useObjRefLocation = glGetUniformLocation(m_program, "useObjRef");
+    m_objRefLocation = glGetUniformLocation(m_program, "objRef");
+    m_viewportSizeLocation = glGetUniformLocation(m_program, "viewportSize");
+    m_viewportOriginLocation = glGetUniformLocation(m_program, "viewportOrigin");
     m_colorLocation = glGetUniformLocation(m_program, "color");
-    if(GL_NO_ERROR != err) {
-        LOG_ERROR("Failed to get uniform location for color: %d", static_cast<int>(err));
-        return false;
-    }
-
-    return true;
 }
 
-bool BumpShaderProgram::draw(GLenum mode, const VertexArray& vertexArray, const float color[])
+void  BumpShaderProgram::setPosition(const VertexArray& vertexArray)
 {
     glBindVertexArray(vertexArray.vao());
     glBindBuffer(GL_ARRAY_BUFFER, vertexArray.vbo());
 
-    glVertexAttribPointer(m_posLocation, Constants::NUM_FLOATS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glEnableVertexAttribArray(m_posLocation);
-
-    glUniform4fv(m_colorLocation, 1, color);
-
-    glDrawArrays(mode, 0, vertexArray.numVertices());
+    glVertexAttribPointer(m_positionLocation, Constants::NUM_FLOATS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glEnableVertexAttribArray(m_positionLocation);
 }
 
 } // end of namespace bump
