@@ -1,6 +1,7 @@
 #include <memory>
 #include "log.h"
 #include "config.h"
+#include "vertexarray.h"
 #include "app.h"
 
 namespace bump {
@@ -65,11 +66,20 @@ bool App::init()
 
 bool App::run()
 {
+    float vertices[] = {
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        0.0f, 1.0f
+    };
+
+    VertexArray vertexArray(vertices, sizeof(vertices));
+    float color[] = {1.0f, 0.0f, 0.0f, 1.0f};
+
+    m_program->use();
+
     while(glfwWindowShouldClose(m_window) == 0) {
-        if(!update()) {
-            LOG_ERROR("Failed to update");
-            return false;
-        }
+        glClear(GL_COLOR_BUFFER_BIT);
+        m_program->draw(GL_TRIANGLES, vertexArray, color);
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();

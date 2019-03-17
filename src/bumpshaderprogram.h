@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "shaderprogram.h"
+#include "vertexarray.h"
 
 namespace bump {
 
@@ -11,6 +12,8 @@ public:
     BumpShaderProgram(const std::string& vertexShaderFile, const std::string& fragShaderFile);
 
     virtual ~BumpShaderProgram();
+
+    bool draw(GLenum mode, const VertexArray& vertexArray, const float color[]);
 
 protected:
     bool loadParam();
