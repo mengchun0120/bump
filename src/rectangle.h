@@ -11,7 +11,8 @@ public:
 
     virtual ~Rectangle();
 
-    void draw(BumpShaderProgram& program, const GLfloat *ref, const GLfloat *color);
+    void draw(BumpShaderProgram& program, const GLfloat *ref,
+              const GLfloat* fillColor, const GLfloat* borderColor, GLfloat borderWidth);
 };
 
 } // end of namespace bump

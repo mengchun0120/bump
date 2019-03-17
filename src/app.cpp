@@ -70,12 +70,13 @@ bool App::run()
 
     Rectangle rect(0.0f, 0.0f, 100.0f, 100.0f);
     GLfloat ref[] = {100.f, 100.f};
-    GLfloat color[] = {1.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat fillColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat borderColor[] = {0.0f, 0.0f, 1.0f, 1.0f};
     
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        rect.draw(*m_program, ref, color);
+        rect.draw(*m_program, ref, fillColor, borderColor, 1.0f);
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();

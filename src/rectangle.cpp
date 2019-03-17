@@ -8,18 +8,15 @@ Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
 : VertexArray()
 {
     GLfloat vertices[] = {
+        x+width/2.0f, y+height/2.0f,
         x, y,
         x, y+height,
         x+width, y+height,
-        x+width, y
+        x+width, y,
+        x, y
     };
 
-    unsigned short indices[] = {
-        0, 1, 2,
-        0, 2, 3
-    };
-
-    if(!load(vertices, 4, indices, 6)) {
+    if(!load(vertices, 6, nullptr, 0)) {
         throw std::runtime_error("Failed to initialize Rectangle");
     }
 }
@@ -28,7 +25,8 @@ Rectangle::~Rectangle()
 {
 }
 
-void Rectangle::draw(BumpShaderProgram& program, const GLfloat *ref, const GLfloat *color)
+void Rectangle::draw(BumpShaderProgram& program, const GLfloat *ref,
+                     const GLfloat* fillColor, const GLfloat* borderColor, GLfloat borderWidth)
 {
     if(ref != nullptr) {
         program.setUseObjRef(true);
@@ -37,10 +35,18 @@ void Rectangle::draw(BumpShaderProgram& program, const GLfloat *ref, const GLflo
         program.setUseObjRef(false);
     }
 
-    program.setColor(color);
     program.setPosition(*this);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void *)0);
+    if(fillColor != nullptr) {
+        program.setColor(fillColor);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
+    }
+
+    if(borderColor != nullptr) {
+        glLineWidth(borderWidth);
+        program.setColor(borderColor);
+        glDrawArrays(GL_LINE_LOOP, 1, 5);
+    }
 }
 
 } // end of namespace bump
