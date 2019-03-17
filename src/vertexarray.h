@@ -10,16 +10,25 @@ public:
     VertexArray();
 
     VertexArray(const float* vertices,
-                unsigned int numVertices);
+                unsigned int numVertices,
+                const unsigned int* indices,
+                unsigned int numIndices);
 
     virtual ~VertexArray();
 
     bool load(const float* vertices,
-              unsigned int numVertices);
+              unsigned int numVertices,
+              const unsigned int* indices,
+              unsigned int numIndices);
 
     unsigned int numVertices() const
     {
         return m_numVertices;
+    }
+
+    unsigned int numIndices() const
+    {
+        return m_numIndices;
     }
 
     GLuint vao() const
@@ -32,12 +41,19 @@ public:
         return m_vbo;
     }
 
+    GLuint ebo() const
+    {
+        return m_ebo;
+    }
+
 protected:
     void destroy();
 
     unsigned int m_numVertices;
+    unsigned int m_numIndices;
     GLuint m_vao;
     GLuint m_vbo;
+    GLuint m_ebo;
 };
 
 } // end of namespace bump

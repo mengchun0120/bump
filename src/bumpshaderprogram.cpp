@@ -28,10 +28,14 @@ void BumpShaderProgram::loadParam()
 void  BumpShaderProgram::setPosition(const VertexArray& vertexArray)
 {
     glBindVertexArray(vertexArray.vao());
-    glBindBuffer(GL_ARRAY_BUFFER, vertexArray.vbo());
 
+    glBindBuffer(GL_ARRAY_BUFFER, vertexArray.vbo());
     glVertexAttribPointer(m_positionLocation, Constants::NUM_FLOATS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glEnableVertexAttribArray(m_positionLocation);
+
+    if(vertexArray.ebo() != 0) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexArray.ebo());
+    }
 }
 
 } // end of namespace bump

@@ -26,7 +26,7 @@ private:
 
     bool initOpenGL();
 
-    bool update();
+    void updateOpenGLForUse();
 
 private:
     GLFWwindow* m_window;

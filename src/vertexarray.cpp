@@ -7,18 +7,20 @@ namespace bump {
 
 VertexArray::VertexArray()
 : m_numVertices(0)
+, m_numIndices(0)
 , m_vao(0)
 , m_vbo(0)
+, m_ebo(0)
 {
 }
 
 VertexArray::VertexArray(const float* vertices,
-                         unsigned int numVertices)
-: m_numVertices(numVertices)
-, m_vao(0)
-, m_vbo(0)
+                         unsigned int numVertices,
+                         const unsigned int* indices,
+                         unsigned int numIndices)
+: VertexArray()
 {
-    if(!load(vertices, numVertices)) {
+    if(!load(vertices, numVertices, indices, numIndices)) {
         throw std::runtime_error("Faield to load VertexArray");
     }
 }
@@ -29,7 +31,9 @@ VertexArray::~VertexArray()
 }
 
 bool VertexArray::load(const float* vertices,
-                       unsigned int numVertices)
+                       unsigned int numVertices,
+                       const unsigned int* indices,
+                       unsigned int numIndices)
 {
     if(vertices == nullptr) {
         LOG_ERROR("vertexArray cannot be null");
@@ -41,36 +45,54 @@ bool VertexArray::load(const float* vertices,
         return false;
     }
 
+    if(indices != nullptr && numIndices == 0) {
+        LOG_ERROR("numIndices cannot be zero");
+        return false;
+    }
+
     glGenVertexArrays(1, &m_vao);
     if(m_vao == 0) {
         LOG_ERROR("Failed to generate VAO: %d", glGetError());
         return false;
     }
 
+    glBindVertexArray(m_vao);
+
     glGenBuffers(1, &m_vbo);
     if(m_vbo == 0) {
         LOG_ERROR("Failed to generate VBO: %d", glGetError());
-        destroy();
         return false;
     }
 
-    glBindVertexArray(m_vao);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, numVertices * Constants::VERTEX_SIZE, vertices, GL_STATIC_DRAW);
+
+    if(indices != nullptr) {
+        glGenBuffers(1, &m_ebo);
+        if(m_ebo == 0) {
+            LOG_ERROR("Failed to generate EBO: %d", glGetError());
+            return false;
+        }
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    }
 
     return true;
 }
 
 void VertexArray::destroy()
 {
+    if(m_ebo != 0) {
+        glDeleteBuffers(1, &m_ebo);
+    }
+
     if(m_vbo != 0) {
         glDeleteBuffers(1, &m_vbo);
-        m_vbo = 0;
     }
 
     if(m_vao != 0) {
         glDeleteVertexArrays(1, &m_vao);
-        m_vao = 0;
     }
 }
 

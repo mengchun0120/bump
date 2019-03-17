@@ -66,7 +66,7 @@ bool App::init()
 
 bool App::run()
 {
-    m_program->use();
+    updateOpenGLForUse();
 
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -75,12 +75,6 @@ bool App::run()
         glfwPollEvents();
     }
 
-    return true;
-}
-
-bool App::update()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
     return true;
 }
 
@@ -123,6 +117,7 @@ bool App::initWindow()
 bool App::initOpenGL()
 {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -134,7 +129,23 @@ bool App::initOpenGL()
         return false;
     }
 
+
     return true;
+}
+
+void App::updateOpenGLForUse()
+{
+    int width, height;
+    glfwGetFramebufferSize(m_window, &width, &height);
+    glViewport(0, 0, width, height);
+
+    m_program->use();
+
+    GLfloat viewportSize[] = {(GLfloat)width, (GLfloat)height};
+    GLfloat viewportOrigin[] = {-(GLfloat)width/2.0f, -(GLfloat)height/2.0f};
+
+    m_program->setViewportSize(viewportSize);
+    m_program->setViewportOrigin(viewportOrigin);
 }
 
 } // end of namespace bump
