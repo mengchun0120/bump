@@ -9,6 +9,6 @@ void main() {
     if(useObjRef) {
         pos += objRef;
     }
-    pos -= viewportOrigin;
+    pos += viewportOrigin;
     gl_Position = vec4(pos * 2.0 / viewportSize, 0.0, 1.0);
 }

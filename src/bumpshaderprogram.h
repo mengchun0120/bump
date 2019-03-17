@@ -35,6 +35,11 @@ public:
 
     void setPosition(const VertexArray& vertexArray);
 
+    void setColor(const GLfloat* color)
+    {
+        glUniform4fv(m_colorLocation, 1, color);
+    }
+
 protected:
     void loadParam();
 

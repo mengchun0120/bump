@@ -1,7 +1,7 @@
 #include <memory>
 #include "log.h"
 #include "config.h"
-#include "vertexarray.h"
+#include "rectangle.h"
 #include "app.h"
 
 namespace bump {
@@ -68,8 +68,14 @@ bool App::run()
 {
     updateOpenGLForUse();
 
+    Rectangle rect(0.0f, 0.0f, 100.0f, 100.0f);
+    GLfloat ref[] = {100.f, 100.f};
+    GLfloat color[] = {1.0f, 0.0f, 0.0f, 1.0f};
+    
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
+
+        rect.draw(*m_program, ref, color);
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();

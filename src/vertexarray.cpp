@@ -16,7 +16,7 @@ VertexArray::VertexArray()
 
 VertexArray::VertexArray(const float* vertices,
                          unsigned int numVertices,
-                         const unsigned int* indices,
+                         const unsigned short* indices,
                          unsigned int numIndices)
 : VertexArray()
 {
@@ -32,7 +32,7 @@ VertexArray::~VertexArray()
 
 bool VertexArray::load(const float* vertices,
                        unsigned int numVertices,
-                       const unsigned int* indices,
+                       const unsigned short* indices,
                        unsigned int numIndices)
 {
     if(vertices == nullptr) {
@@ -75,7 +75,7 @@ bool VertexArray::load(const float* vertices,
         }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(unsigned short), indices, GL_STATIC_DRAW);
     }
 
     return true;
