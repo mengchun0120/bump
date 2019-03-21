@@ -33,6 +33,7 @@ bool App::initSingleton()
 App::App()
 : m_window(nullptr)
 , m_program(nullptr)
+, m_game(nullptr)
 {
     if(!init()) {
         throw std::runtime_error("Failed to initialize App");
@@ -41,12 +42,12 @@ App::App()
 
 App::~App()
 {
-    if(m_window != nullptr) {
-        glfwTerminate();
+    if(m_game != nullptr) {
+        delete m_game;
     }
 
-    if(m_program != nullptr) {
-        delete m_program;
+    if(m_window != nullptr) {
+        glfwTerminate();
     }
 }
 
@@ -62,26 +63,18 @@ bool App::init()
         return false;
     }
 
+    initGame();
+
     return true;
 }
 
 bool App::run()
 {
-    updateOpenGLForUse();
-
-    Rectangle rect(0.0f, 0.0f, 100.0f, 100.0f);
-    Circle circle(0.0f, 0.0f, 50.f, 40);
-    
-    GLfloat ref[] = {100.f, 100.f};
-    GLfloat ref1[] = {400.0f, 400.f};
-    GLfloat fillColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
-    GLfloat borderColor[] = {0.0f, 0.0f, 1.0f, 1.0f};
-
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        rect.draw(*m_program, ref, fillColor, borderColor, 1.0f);
-        circle.draw(*m_program, ref1, fillColor, borderColor, 1.0f);
+        m_game->update();
+        m_game->present();
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();
@@ -100,6 +93,7 @@ bool App::initWindow()
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -135,29 +129,40 @@ bool App::initOpenGL()
 
     try {
         Config& config = Config::getSingleton();
-        m_program = new BumpShaderProgram(config.m_bumpVertexShaderFile, config.m_bumpFragShaderFile);
+        m_program.reset(new BumpShaderProgram(config.m_bumpVertexShaderFile,
+                                              config.m_bumpFragShaderFile));
     } catch(const std::exception& e) {
         LOG_ERROR("Exception happened: %s", e.what());
         return false;
     }
 
+    m_program->use();
+
+    updateViewport();
 
     return true;
 }
 
-void App::updateOpenGLForUse()
+void App::updateViewport()
 {
     int width, height;
     glfwGetFramebufferSize(m_window, &width, &height);
     glViewport(0, 0, width, height);
 
-    m_program->use();
+    m_viewportWidth = static_cast<GLfloat>(width);
+    m_viewportHeight = static_cast<GLfloat>(height);
 
-    GLfloat viewportSize[] = {(GLfloat)width, (GLfloat)height};
-    GLfloat viewportOrigin[] = {-(GLfloat)width/2.0f, -(GLfloat)height/2.0f};
+    GLfloat viewportSize[] = {m_viewportWidth, m_viewportHeight};
+    GLfloat viewportOrigin[] = {-m_viewportWidth/2.0f, -m_viewportHeight/2.0f};
 
     m_program->setViewportSize(viewportSize);
     m_program->setViewportOrigin(viewportOrigin);
 }
 
+void App::initGame()
+{
+    m_game = new Game(m_program, m_viewportWidth, m_viewportHeight);
+}
+
 } // end of namespace bump
+

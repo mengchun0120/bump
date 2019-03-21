@@ -3,7 +3,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <memory>
 #include "bumpshaderprogram.h"
+#include "game.h"
 
 namespace bump {
 
@@ -17,6 +19,11 @@ public:
 
     bool run();
 
+    BumpShaderProgram& program()
+    {
+        return *m_program;
+    }
+
 private:
     App();
 
@@ -26,13 +33,19 @@ private:
 
     bool initOpenGL();
 
-    void updateOpenGLForUse();
+    void updateViewport();
+
+    void initGame();
 
 private:
     GLFWwindow* m_window;
-    BumpShaderProgram* m_program;
+    std::shared_ptr<BumpShaderProgram> m_program;
+    GLfloat m_viewportWidth;
+    GLfloat m_viewportHeight;
+    Game* m_game;
 };
 
 } // end of namespace bump
 
 #endif
+
