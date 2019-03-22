@@ -16,6 +16,16 @@ public:
 
     virtual void draw(BumpShaderProgram& program) = 0;
 
+    GLfloat& x()
+    {
+        return m_pos[0];
+    }
+
+    GLfloat& y()
+    {
+        return m_pos[1];
+    }
+
 protected:
     GLfloat m_pos[Constants::NUM_FLOATS_PER_VERTEX];
 };

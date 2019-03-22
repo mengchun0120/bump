@@ -5,6 +5,11 @@
 
 namespace bump {
 
+Circle::Circle()
+: Polygon()
+{
+}
+
 Circle::Circle(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices)
 : Polygon()
 , m_centerX(centerX)

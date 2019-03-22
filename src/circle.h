@@ -7,9 +7,13 @@ namespace bump {
 
 class Circle: public Polygon {
 public:
+    Circle();
+
     Circle(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices);
 
     virtual ~Circle();
+
+    bool init(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices);
 
     GLfloat centerX() const
     {
@@ -25,9 +29,6 @@ public:
     {
         return m_radius;
     }
-
-private:
-    bool init(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices);
 
 protected:
     GLfloat m_centerX, m_centerY;

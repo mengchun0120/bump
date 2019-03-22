@@ -1,3 +1,4 @@
+#include "config.h"
 #include "game.h"
 
 namespace bump {
@@ -8,6 +9,8 @@ Game::Game(std::shared_ptr<BumpShaderProgram>& program, GLfloat width, GLfloat h
 , m_height(height)
 , m_bat(width, height)
 {
+
+
 }
 
 Game::~Game()

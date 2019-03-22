@@ -7,9 +7,13 @@ namespace bump {
 
 class Rectangle: public Polygon {
 public:
+    Rectangle();
+
     Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
 
     virtual ~Rectangle();
+
+    bool init(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
 
     GLfloat x() const
     {

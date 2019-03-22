@@ -2,6 +2,7 @@
 #define INCLUDE_CONFIG
 
 #include <string>
+#include "constants.h"
 
 namespace bump {
 
@@ -19,6 +20,9 @@ public:
     std::string m_bumpVertexShaderFile;
     std::string m_bumpFragShaderFile;
     std::string m_title;
+    float m_batWidth;
+    float m_batHeight;
+    float m_batColor[Constants::NUM_FLOATS_COLOR];
 
 private:
     Config(const char* fileName);

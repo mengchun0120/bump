@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <stdexcept>
+#include <sstream>
 #include "log.h"
 #include "utils.h"
 #include "config.h"
@@ -13,7 +14,9 @@ namespace bump {
 enum ConfigValueType {
     TYPE_INT,
     TYPE_STRING,
-    TYPE_DOUBLE
+    TYPE_DOUBLE,
+    TYPE_FLOAT,
+    TYPE_FLOAT_ARRAY
 };
 
 struct ConfigItem {
@@ -66,20 +69,37 @@ int findConfigItem(const std::vector<ConfigItem> items, const char* name)
     return -1;
 }
 
+void parseFloatArray(float *arr, const char *value)
+{
+    std::istringstream iss(value);
+
+    for(float *ptr = arr; !iss.eof(); ++ptr) {
+        iss >> *ptr;
+    }
+}
+
 void setValue(ConfigItem& item, const char *value)
 {
     switch(item.m_type) {
     case TYPE_INT:
         *((int *)(item.m_mem)) = atoi(value);
-        item.m_set = 1;
+        item.m_set = true;
         break;
     case TYPE_DOUBLE:
         *((double *)(item.m_mem)) = atof(value);
-        item.m_set = 1;
+        item.m_set = true;
         break;
     case TYPE_STRING:
         *((std::string *)item.m_mem) = value;
-        item.m_set = 1;
+        item.m_set = true;
+        break;
+    case TYPE_FLOAT:
+        *((float *)(item.m_mem)) = static_cast<float>(atof(value));
+        item.m_set = true;
+        break;
+    case TYPE_FLOAT_ARRAY:
+        parseFloatArray((float *)(item.m_mem), value);
+        item.m_set = true;
         break;
     }
 }
@@ -140,7 +160,10 @@ bool Config::load(const char* fileName)
         { "height", TYPE_INT, &m_height, true, false },
         { "bumpVertexShaderFile", TYPE_STRING, &m_bumpVertexShaderFile, true, false },
         { "bumpFragShaderFile", TYPE_STRING, &m_bumpFragShaderFile, true, false },
-        { "title", TYPE_STRING, &m_title, true, false }
+        { "title", TYPE_STRING, &m_title, true, false },
+        { "batWidth", TYPE_FLOAT, &m_batWidth, true, false },
+        { "batHeight", TYPE_FLOAT, &m_batHeight, true, false },
+        { "batColor", TYPE_FLOAT_ARRAY, m_batColor, true, false }
     };
 
     FILE *fp = fopen(fileName, "r");
@@ -186,3 +209,4 @@ bool Config::load(const char* fileName)
 }
 
 } // end of namespace bump
+

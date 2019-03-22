@@ -4,12 +4,28 @@
 
 namespace bump {
 
+Rectangle::Rectangle()
+: Polygon()
+{
+}
+
 Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
 : Polygon()
 , m_x(x)
 , m_y(y)
 , m_width(width)
 , m_height(height)
+{
+    if(!init(x, y, width, height)) {
+        throw std::runtime_error("Failed to initialize Rectangle");
+    }
+}
+
+Rectangle::~Rectangle()
+{
+}
+
+bool Rectangle::init(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
 {
     GLfloat vertices[] = {
         x+width/2.0f, y+height/2.0f,
@@ -21,12 +37,10 @@ Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
     };
 
     if(!load(vertices, 6, nullptr, 0)) {
-        throw std::runtime_error("Failed to initialize Rectangle");
+        return false;
     }
-}
 
-Rectangle::~Rectangle()
-{
+    return true;
 }
 
 } // end of namespace bump
