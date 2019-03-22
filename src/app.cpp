@@ -3,6 +3,7 @@
 #include "config.h"
 #include "rectangle.h"
 #include "circle.h"
+#include "pointerhandler.h"
 #include "app.h"
 
 namespace bump {
@@ -162,6 +163,7 @@ void App::updateViewport()
 void App::initGame()
 {
     m_game = new Game(m_program, m_viewportWidth, m_viewportHeight);
+    glfwSetCursorPosCallback(m_window, handlePointerPosition);
 }
 
 } // end of namespace bump
