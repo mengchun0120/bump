@@ -20,6 +20,7 @@ public:
     std::string m_bumpVertexShaderFile;
     std::string m_bumpFragShaderFile;
     std::string m_title;
+    int m_pointerEventPoolSize;
     float m_batWidth;
     float m_batHeight;
     float m_batColor[Constants::NUM_FLOATS_COLOR];

@@ -161,6 +161,7 @@ bool Config::load(const char* fileName)
         { "bumpVertexShaderFile", TYPE_STRING, &m_bumpVertexShaderFile, true, false },
         { "bumpFragShaderFile", TYPE_STRING, &m_bumpFragShaderFile, true, false },
         { "title", TYPE_STRING, &m_title, true, false },
+        { "pointerEventPoolSize", TYPE_INT, &m_pointerEventPoolSize, true, false },
         { "batWidth", TYPE_FLOAT, &m_batWidth, true, false },
         { "batHeight", TYPE_FLOAT, &m_batHeight, true, false },
         { "batColor", TYPE_FLOAT_ARRAY, m_batColor, true, false }

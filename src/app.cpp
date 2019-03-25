@@ -3,7 +3,7 @@
 #include "config.h"
 #include "rectangle.h"
 #include "circle.h"
-#include "pointerhandler.h"
+#include "inputmanager.h"
 #include "app.h"
 
 namespace bump {
@@ -63,6 +63,8 @@ bool App::init()
         LOG_ERROR("Failed to initialize OpenGL");
         return false;
     }
+
+    InputManager::initSingleton(m_window);
 
     initGame();
 
@@ -163,7 +165,7 @@ void App::updateViewport()
 void App::initGame()
 {
     m_game = new Game(m_program, m_viewportWidth, m_viewportHeight);
-    glfwSetCursorPosCallback(m_window, handlePointerPosition);
+    InputManager::singleton().start();
 }
 
 } // end of namespace bump
