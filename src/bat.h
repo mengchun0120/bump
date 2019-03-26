@@ -14,6 +14,8 @@ public:
 
     virtual void draw(BumpShaderProgram& program);
 
+    void move(GLfloat newX);
+
 protected:
     GLfloat m_xBound;
     Rectangle m_shape;

@@ -27,9 +27,11 @@ void Game::update()
 
     PointerEvent *event = reinterpret_cast<PointerEvent *>(queue.first());
     while(event) {
-        std::cout << event->m_x << ' ' << event->m_y << ' ' << (int)event->m_type << std::endl;
+        m_bat.move(event->m_x);
         event = reinterpret_cast<PointerEvent *>(event->m_next);
     }
+
+    inputManager.freePointerEvent(queue);
 }
 
 void Game::present()

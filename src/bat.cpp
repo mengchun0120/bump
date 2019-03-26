@@ -31,6 +31,16 @@ Bat::~Bat()
 {
 }
 
+void Bat::move(GLfloat newX)
+{
+    if(newX < 0.0f) {
+        newX = 0.0f;
+    } else if(newX > m_xBound) {
+        newX = m_xBound;
+    }
+    x() = newX;
+}
+
 void Bat::draw(BumpShaderProgram& program)
 {
     m_shape.draw(program, m_pos, m_fillColor, nullptr, 0.0f);

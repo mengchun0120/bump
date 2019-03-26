@@ -35,6 +35,7 @@ protected:
     bool m_enabled;
     ObjectPool m_pointerEventPool;
     Queue m_inPointerEvents;
+    GLfloat m_windowHeight;
 };
 
 } // end of namespace bump

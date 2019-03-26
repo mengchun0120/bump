@@ -39,6 +39,9 @@ InputManager::InputManager(GLFWwindow *window, unsigned int pointerEventPoolSize
 , m_pointerEventPool(pointerEventPoolSize, allocPointerEvent, deallocPointerEvent)
 , m_inPointerEvents()
 {
+    int width, height;
+    glfwGetFramebufferSize(m_window, &width, &height);
+    m_windowHeight = (GLfloat)height;
 }
 
 InputManager::~InputManager()
@@ -67,7 +70,7 @@ void InputManager::addPointerEvent(GLfloat x, GLfloat y, PointerEvent::Type type
 
     PointerEvent *event = reinterpret_cast<PointerEvent *>(m_pointerEventPool.alloc());
     event->m_x = x;
-    event->m_y = y;
+    event->m_y = m_windowHeight - y;
     event->m_type = type;
 
     m_inPointerEvents.enqueue(event);
