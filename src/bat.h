@@ -16,6 +16,16 @@ public:
 
     void move(float newX);
 
+    float width() const
+    {
+        return m_shape.width();
+    }
+
+    float height() const
+    {
+        return m_shape.height();
+    }
+
 protected:
     float m_xBound;
     Rectangle m_shape;

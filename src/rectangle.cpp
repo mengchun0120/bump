@@ -13,8 +13,6 @@ Rectangle::Rectangle(float x, float y, float width, float height)
 : Polygon()
 , m_x(x)
 , m_y(y)
-, m_width(width)
-, m_height(height)
 {
     if(!init(x, y, width, height)) {
         throw std::runtime_error("Failed to initialize Rectangle");
@@ -39,6 +37,9 @@ bool Rectangle::init(float x, float y, float width, float height)
     if(!load(vertices, 6, nullptr, 0)) {
         return false;
     }
+
+    m_width = width;
+    m_height = height;
 
     return true;
 }

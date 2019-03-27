@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "bat.h"
+#include "ball.h"
 
 namespace bump {
 
@@ -31,6 +32,7 @@ private:
     float m_width;
     float m_height;
     Bat m_bat;
+    Ball m_ball;
 };
 
 } // end of namespace bump
