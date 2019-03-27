@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <GL/glew.h>
 #include "utils.h"
 #include "log.h"
 #include "shaderprogram.h"
@@ -156,17 +157,10 @@ void ShaderProgram::destroy()
     LOG_INFO("ShaderProgram destroyed");
 }
 
-bool ShaderProgram::use()
+void ShaderProgram::use()
 {
     glUseProgram(m_program);
-
-    GLenum err;
-    if((err = glGetError()) != GL_NO_ERROR) {
-        LOG_ERROR("glUseProgram failed: err=%d", err);
-        return false;
-    }
-
-    return true;
 }
 
-} // end of namespace ta3
+} // end of namespace bump
+

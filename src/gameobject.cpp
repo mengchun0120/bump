@@ -8,7 +8,7 @@ GameObject::GameObject()
     m_pos[1] = 0.0f;
 }
 
-GameObject::GameObject(GLfloat x, GLfloat y)
+GameObject::GameObject(float x, float y)
 {
     m_pos[0] = x;
     m_pos[1] = y;

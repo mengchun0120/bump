@@ -1,8 +1,6 @@
 #ifndef INCLUDE_VERTEXARRAY
 #define INCLUDE_VERTEXARRAY
 
-#include <GL/glew.h>
-
 namespace bump {
 
 class VertexArray {
@@ -31,17 +29,17 @@ public:
         return m_numIndices;
     }
 
-    GLuint vao() const
+    unsigned int vao() const
     {
         return m_vao;
     }
 
-    GLuint vbo() const
+    unsigned int vbo() const
     {
         return m_vbo;
     }
 
-    GLuint ebo() const
+    unsigned int ebo() const
     {
         return m_ebo;
     }
@@ -51,9 +49,9 @@ protected:
 
     unsigned int m_numVertices;
     unsigned int m_numIndices;
-    GLuint m_vao;
-    GLuint m_vbo;
-    GLuint m_ebo;
+    unsigned int m_vao;
+    unsigned int m_vbo;
+    unsigned int m_ebo;
 };
 
 } // end of namespace bump

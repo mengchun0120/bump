@@ -1,4 +1,6 @@
 #include <memory>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include "log.h"
 #include "config.h"
 #include "rectangle.h"
@@ -76,6 +78,8 @@ bool App::run()
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
 
+        float delta = m_deltaSmoother.getTimeDelta();
+
         m_game->update();
         m_game->present();
 
@@ -152,11 +156,11 @@ void App::updateViewport()
     glfwGetFramebufferSize(m_window, &width, &height);
     glViewport(0, 0, width, height);
 
-    m_viewportWidth = static_cast<GLfloat>(width);
-    m_viewportHeight = static_cast<GLfloat>(height);
+    m_viewportWidth = static_cast<float>(width);
+    m_viewportHeight = static_cast<float>(height);
 
-    GLfloat viewportSize[] = {m_viewportWidth, m_viewportHeight};
-    GLfloat viewportOrigin[] = {-m_viewportWidth/2.0f, -m_viewportHeight/2.0f};
+    float viewportSize[] = {m_viewportWidth, m_viewportHeight};
+    float viewportOrigin[] = {-m_viewportWidth/2.0f, -m_viewportHeight/2.0f};
 
     m_program->setViewportSize(viewportSize);
     m_program->setViewportOrigin(viewportOrigin);
@@ -166,6 +170,7 @@ void App::initGame()
 {
     m_game = new Game(m_program, m_viewportWidth, m_viewportHeight);
     InputManager::singleton().start();
+    m_deltaSmoother.start();
 }
 
 } // end of namespace bump

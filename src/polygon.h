@@ -11,12 +11,12 @@ class Polygon: public VertexArray {
 public:
     Polygon();
 
-    Polygon(const GLfloat* vertices, unsigned int numVertices);
+    Polygon(const float *vertices, unsigned int numVertices);
 
     virtual ~Polygon();
 
-    void draw(BumpShaderProgram& program, const GLfloat* ref, const GLfloat* fillColor,
-              const GLfloat* borderColor, GLfloat borderWidth);
+    void draw(BumpShaderProgram &program, const float *ref, const float *fillColor,
+              const float *borderColor, float borderWidth);
 };
 
 } // end of namespace bump

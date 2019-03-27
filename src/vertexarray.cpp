@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <GL/glew.h>
 #include "log.h"
 #include "constants.h"
 #include "vertexarray.h"
@@ -100,3 +101,4 @@ void VertexArray::destroy()
 }
 
 } // end of namespace bump
+

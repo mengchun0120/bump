@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include "config.h"
 #include "log.h"
 #include "constants.h"
@@ -25,7 +26,32 @@ void BumpShaderProgram::loadParam()
     m_colorLocation = glGetUniformLocation(m_program, "color");
 }
 
-void  BumpShaderProgram::setPosition(const VertexArray& vertexArray)
+void BumpShaderProgram::setUseObjRef(bool enabled)
+{
+    glUniform1i(m_useObjRefLocation, enabled ? 1 : 0);
+}
+
+void BumpShaderProgram::setObjRef(const float* objRef)
+{
+    glUniform2fv(m_objRefLocation, 1, objRef);
+}
+
+void BumpShaderProgram::setViewportSize(const float* viewportSize)
+{
+    glUniform2fv(m_viewportSizeLocation, 1, viewportSize);
+}
+
+void BumpShaderProgram::setViewportOrigin(const float* viewportOrigin)
+{
+    glUniform2fv(m_viewportOriginLocation, 1, viewportOrigin);
+}
+
+void BumpShaderProgram::setColor(const float* color)
+{
+    glUniform4fv(m_colorLocation, 1, color);
+}
+
+void BumpShaderProgram::setPosition(const VertexArray& vertexArray)
 {
     glBindVertexArray(vertexArray.vao());
 

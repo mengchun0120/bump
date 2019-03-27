@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include "polygon.h"
 
 namespace bump {
@@ -7,7 +8,7 @@ Polygon::Polygon()
 {
 }
 
-Polygon::Polygon(const GLfloat* vertices, unsigned int numVertices)
+Polygon::Polygon(const float *vertices, unsigned int numVertices)
 : VertexArray(vertices, numVertices)
 {
 }
@@ -17,8 +18,8 @@ Polygon::~Polygon()
 
 }
 
-void Polygon::draw(BumpShaderProgram& program, const GLfloat* ref, const GLfloat* fillColor,
-                   const GLfloat* borderColor, GLfloat borderWidth)
+void Polygon::draw(BumpShaderProgram &program, const float *ref, const float *fillColor,
+                   const float *borderColor, float borderWidth)
 {
     if(ref != nullptr) {
         program.setUseObjRef(true);

@@ -1,10 +1,9 @@
 #include "inputmanager.h"
 #include "game.h"
-#include <iostream>
 
 namespace bump {
 
-Game::Game(std::shared_ptr<BumpShaderProgram>& program, GLfloat width, GLfloat height)
+Game::Game(std::shared_ptr<BumpShaderProgram>& program, float width, float height)
 : m_program(program)
 , m_width(width)
 , m_height(height)
@@ -40,3 +39,4 @@ void Game::present()
 }
 
 } // end of namespace bump
+

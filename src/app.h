@@ -1,11 +1,12 @@
 #ifndef INCLUDE_APP
 #define INCLUDE_APP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <memory>
 #include "bumpshaderprogram.h"
+#include "timedeltasmoother.h"
 #include "game.h"
+
+class GLFWwindow;
 
 namespace bump {
 
@@ -40,8 +41,9 @@ private:
 private:
     GLFWwindow* m_window;
     std::shared_ptr<BumpShaderProgram> m_program;
-    GLfloat m_viewportWidth;
-    GLfloat m_viewportHeight;
+    float m_viewportWidth;
+    float m_viewportHeight;
+    TimeDeltaSmoother m_deltaSmoother;
     Game* m_game;
 };
 

@@ -1,7 +1,6 @@
 #ifndef INCLUDE_SHADERPROGRAM
 #define INCLUDE_SHADERPROGRAM
 
-#include <GL/glew.h>
 #include <vector>
 #include <string>
 
@@ -14,7 +13,7 @@ public:
 
     virtual ~ShaderProgram();
 
-    bool use();
+    void use();
 
 protected:
     bool build(const std::string& vertexShaderFile,
@@ -22,9 +21,9 @@ protected:
 
     void destroy();
 
-    GLuint m_vertexShader;
-    GLuint m_fragShader;
-    GLuint m_program;
+    unsigned int m_vertexShader;
+    unsigned int m_fragShader;
+    unsigned int m_program;
 };
 
 } // end of namespace bump

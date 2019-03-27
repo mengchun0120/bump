@@ -9,37 +9,37 @@ class Rectangle: public Polygon {
 public:
     Rectangle();
 
-    Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
+    Rectangle(float x, float y, float width, float height);
 
     virtual ~Rectangle();
 
-    bool init(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
+    bool init(float x, float y, float width, float height);
 
-    GLfloat x() const
+    float x() const
     {
         return m_x;
     }
 
-    GLfloat y() const
+    float y() const
     {
         return m_y;
     }
 
-    GLfloat width() const
+    float width() const
     {
         return m_width;
     }
 
-    GLfloat height() const
+    float height() const
     {
         return m_height;
     }
 
 protected:
-    GLfloat m_x;
-    GLfloat m_y;
-    GLfloat m_width;
-    GLfloat m_height;
+    float m_x;
+    float m_y;
+    float m_width;
+    float m_height;
 };
 
 } // end of namespace bump

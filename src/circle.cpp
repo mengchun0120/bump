@@ -10,7 +10,7 @@ Circle::Circle()
 {
 }
 
-Circle::Circle(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices)
+Circle::Circle(float centerX, float centerY, float radius, unsigned int numVertices)
 : Polygon()
 , m_centerX(centerX)
 , m_centerY(centerY)
@@ -26,12 +26,12 @@ Circle::~Circle()
 
 }
 
-bool Circle::init(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int numVertices)
+bool Circle::init(float centerX, float centerY, float radius, unsigned int numVertices)
 {
     const double PI = 3.14159265359;
     const double DELTA = 2.0 * PI / numVertices;
 
-    GLfloat vertices[Constants::NUM_FLOATS_PER_VERTEX * (numVertices+2)];
+    float vertices[Constants::NUM_FLOATS_PER_VERTEX * (numVertices+2)];
     unsigned int i, j;
     double theta = 0;
 
@@ -47,3 +47,4 @@ bool Circle::init(GLfloat centerX, GLfloat centerY, GLfloat radius, unsigned int
 }
 
 } // end of namespace bump
+

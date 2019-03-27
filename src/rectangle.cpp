@@ -9,7 +9,7 @@ Rectangle::Rectangle()
 {
 }
 
-Rectangle::Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
+Rectangle::Rectangle(float x, float y, float width, float height)
 : Polygon()
 , m_x(x)
 , m_y(y)
@@ -25,9 +25,9 @@ Rectangle::~Rectangle()
 {
 }
 
-bool Rectangle::init(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
+bool Rectangle::init(float x, float y, float width, float height)
 {
-    GLfloat vertices[] = {
+    float vertices[] = {
         x+width/2.0f, y+height/2.0f,
         x, y,
         x, y+height,
@@ -44,3 +44,4 @@ bool Rectangle::init(GLfloat x, GLfloat y, GLfloat width, GLfloat height)
 }
 
 } // end of namespace bump
+

@@ -29,10 +29,11 @@ void TimeDeltaSmoother::start()
     }
 
     m_sumTimeDelta = 0.0f;
+    m_totalSlots = 0;
     m_lastSlot = 0;
 }
 
-float TimeDeltaSmoother::curTimeDelta()
+float TimeDeltaSmoother::getTimeDelta()
 {
     using namespace std::chrono;
 
@@ -42,12 +43,19 @@ float TimeDeltaSmoother::curTimeDelta()
 
     unsigned int histSize = m_timeDeltaHistory.size();
 
-    m_sumTimeDelta += timeDelta - m_timeDeltaHistory[m_lastSlot];
+    if(m_totalSlots == m_timeDeltaHistory.size()) {
+        m_sumTimeDelta += timeDelta - m_timeDeltaHistory[m_lastSlot];
+    } else {
+        m_sumTimeDelta += timeDelta;
+        m_totalSlots++;
+    }
+
     m_timeDeltaHistory[m_lastSlot] = timeDelta;
     m_lastSlot = (m_lastSlot + 1) % histSize;
     m_prevTime = curTime;
 
-    return m_sumTimeDelta / histSize;
+    return m_sumTimeDelta / m_totalSlots;
 }
 
 } // end of namespace bump
+

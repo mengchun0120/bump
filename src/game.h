@@ -8,16 +8,16 @@ namespace bump {
 
 class Game {
 public:
-    Game(std::shared_ptr<BumpShaderProgram>& program, GLfloat width, GLfloat height);
+    Game(std::shared_ptr<BumpShaderProgram>& program, float width, float height);
 
     virtual ~Game();
 
-    GLfloat width() const
+    float width() const
     {
         return m_width;
     }
 
-    GLfloat height() const
+    float height() const
     {
         return m_height;
     }
@@ -28,8 +28,8 @@ public:
 
 private:
     std::shared_ptr<BumpShaderProgram> m_program;
-    GLfloat m_width;
-    GLfloat m_height;
+    float m_width;
+    float m_height;
     Bat m_bat;
 };
 

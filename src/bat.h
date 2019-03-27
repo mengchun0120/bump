@@ -8,18 +8,18 @@ namespace bump {
 
 class Bat: public GameObject {
 public:
-    Bat(GLfloat gameWidth, GLfloat gameHeight);
+    Bat(float gameWidth, float gameHeight);
 
     virtual ~Bat();
 
     virtual void draw(BumpShaderProgram& program);
 
-    void move(GLfloat newX);
+    void move(float newX);
 
 protected:
-    GLfloat m_xBound;
+    float m_xBound;
     Rectangle m_shape;
-    GLfloat m_fillColor[Constants::NUM_FLOATS_COLOR];
+    float m_fillColor[Constants::NUM_FLOATS_COLOR];
 };
 
 } // end of namespace bump

@@ -16,11 +16,12 @@ public:
 
     void start();
 
-    float curTimeDelta();
+    float getTimeDelta();
 
 private:
     std::vector<float> m_timeDeltaHistory;
     float m_sumTimeDelta;
+    unsigned int m_totalSlots;
     unsigned int m_lastSlot;
     TimePoint m_prevTime;
 };

@@ -6,7 +6,7 @@
 
 namespace bump {
 
-Bat::Bat(GLfloat gameWidth, GLfloat gameHeight)
+Bat::Bat(float gameWidth, float gameHeight)
 : GameObject()
 {
     Config& config = Config::getSingleton();
@@ -31,7 +31,7 @@ Bat::~Bat()
 {
 }
 
-void Bat::move(GLfloat newX)
+void Bat::move(float newX)
 {
     if(newX < 0.0f) {
         newX = 0.0f;
