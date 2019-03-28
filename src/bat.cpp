@@ -17,8 +17,8 @@ Bat::Bat(float gameWidth, float gameHeight)
     }
 
     m_xBound = gameWidth - config.m_batWidth;
-    x() = (gameWidth - config.m_batWidth) / 2.0f;
-    y() = 0.0f;
+    m_pos[0] = (gameWidth - config.m_batWidth) / 2.0f;
+    m_pos[1] = 0.0f;
     memcpy(m_fillColor, config.m_batColor, sizeof(m_fillColor));
 }
 
