@@ -5,36 +5,29 @@
 #include "circle.h"
 #include "constants.h"
 
-class BumpShaderProgram;
-class Game;
-
 namespace bump {
+
+class Game;
 
 class Ball: public GameObject {
 public:
-    Ball();
+    Ball(Game& game);
 
     virtual ~Ball();
 
     void init(float x, float y, float speedX, float speedY);
-
-    virtual void draw(BumpShaderProgram& program);
 
     float radius() const
     {
         return m_shape.radius();
     }
 
-    void update(Game& game, float timeDelta);
+    virtual void draw(BumpShaderProgram& program);
+
+    bool update(float timeDelta);
 
 protected:
-    bool collideVerticalLine(float& collideTime, float& newSpeedX, float& newSpeedY,
-                             float x, float y0, float y1i, float timeDelta);
-
-    bool collideHorizontalLine(float& collideTime, float& newSpeedX, float& newSpeedY,
-                               float y, float x0, float x1, float timeDelta);
-
-protected:
+    Game& m_game;
     Circle m_shape;
     float m_speedX, m_speedY;
     float m_color[Constants::NUM_FLOATS_COLOR];

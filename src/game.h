@@ -9,6 +9,12 @@ namespace bump {
 
 class Game {
 public:
+    enum State {
+        GAME_RUNNING,
+        GAME_STOP
+    };
+
+public:
     Game(std::shared_ptr<BumpShaderProgram>& program, float width, float height);
 
     virtual ~Game();
@@ -23,11 +29,15 @@ public:
         return m_height;
     }
 
-    void update();
+    void update(float timeDelta);
 
     void present();
 
 private:
+    void process_input();
+
+private:
+    State m_state;
     std::shared_ptr<BumpShaderProgram> m_program;
     float m_width;
     float m_height;

@@ -80,7 +80,7 @@ bool App::run()
 
         float delta = m_deltaSmoother.getTimeDelta();
 
-        m_game->update();
+        m_game->update(delta);
         m_game->present();
 
         glfwSwapBuffers(m_window);

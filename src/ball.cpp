@@ -1,10 +1,12 @@
 #include <cmath>
 #include "ball.h"
+#include "game.h"
 
 namespace bump {
 
-Ball::Ball()
+Ball::Ball(Game& game)
 : GameObject()
+, m_game(game)
 , m_shape(0.0f, 0.0f, 10.0f, 40)
 , m_color{0.0f, 1.0f, 0.0f, 1.0f}
 {
@@ -27,62 +29,56 @@ void Ball::draw(BumpShaderProgram& program)
     m_shape.draw(program, m_pos, m_color, nullptr, 0.0f);
 }
 
-bool Ball::collideVerticalLine(float& collideTime, float& newSpeedX, float& newSpeedY,
-                               float x, float y0, float y1, float timeDelta)
+bool Ball::update(float timeDelta)
 {
-    
-}
+    float x = m_pos[0];
+    float y = m_pos[1];
+    float radius = m_shape.radius();
+    float expectedX = x + m_speedX * timeDelta;
+    float expectedY = y + m_speedY * timeDelta;
 
-bool Ball::collideHorizontalLine(float& collideTime, float& newSpeedX, float& newSpeedY,
-                                 float y, float x0, float x1, float timeDelta)
-{
-    float r = m_shape.radius();
-    float yc = m_pos[1];
-    float xc = m_pos[0];
-    float yDist = yc - y;
-    float yDistAbs = (float)fabs(ydist);
+    float collideX, collideY, newSpeedX, newSpeedY, collideTime;
+    bool collide = false;
 
-    if(yDistAbs >= r) {
-        if((yDist > 0.0f && m_speedY >= 0.0f) || (yDist < 0.0f && m_speedY <= 0.0f)) {
-            return false;
-        }
-
-        float touchTime = (yDistAbs - r) / (float)fabs(m_speedY);
-        if(touchTime > timeDelta) {
-            return false;
-        }
-
-        float touchX = xc + touchTime * m_speedX;
-        if(x0 <= touchX && touchX <= x1) {
-            collideTime = touchTime;
-            newSpeedX = m_speedX;
-            newSpeedY = -m_speedY;
-        } else {
-            float checkX = (touchX > x1) ? x1 : x0;
-            touchTime = (yc - yDistAbs * r / sqrt((xc-checkX)*(xc-checkX) + ydist*ydist)) / (-m_speedY);
-            if(touchTime > timeDelta) {
-                return false;
-            }
-
-            collideTime = touchTime;
-            newSpeedX = -m_speedX;
-            newSpeedY = -m_speedY;
-
-        } else if(touchX < x0) {
-        }
-
-    } else if(ydist <= -r) {
-        if(m_speedY <= 0) {
-            return false;
-        }
-
-        float touchTime = (
-
-    } else {
+    if(expectedX <= radius) {
+        collideTime = (x - radius) / (-m_speedX);
+        collideX = radius;
+        collideY = y + m_speedY * collideTime;
+        newSpeedX = -m_speedX;
+        newSpeedY = m_speedY;
+        collide = true;
+    } else if(expectedX >= m_game.width() - radius) {
+        collideTime = (m_game.width() - radius - x) / m_speedX;
+        collideX = m_game.width() - radius;
+        collideY = y + m_speedY * collideTime;
+        newSpeedX = -m_speedX;
+        newSpeedY = m_speedY;
+        collide = true;
     }
 
+    if(expectedY >= m_game.height() - radius) {
+        float t1 = (m_game.height() - radius) / m_speedY;
+        if(!collide || t1 < collideTime) {
+            collideTime = (m_game.height() - radius - y) / m_speedY;
+            collideX = x + m_speedX * collideTime;
+            collideY = m_game.height() - radius;
+            newSpeedX = m_speedX;
+            newSpeedY = -m_speedY;
+            collide = true;
+        }
+    }
 
-    return true;
+    if(!collide) {
+        m_pos[0] = expectedX;
+        m_pos[1] = expectedY;
+    } else {
+        m_pos[0] = collideX;
+        m_pos[1] = collideY;
+        m_speedX = newSpeedX;
+        m_speedY = newSpeedY;
+    }
+
+    return m_pos[1] > -radius;
 }
 
 } // end of namespace bump
