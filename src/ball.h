@@ -26,6 +26,17 @@ public:
 
     bool update(float timeDelta);
 
+private:
+    bool collideWithBoundary(float expectedX, float expectedY,
+                             float& collideTime, float& collideX,
+                             float& collideY, float& newSpeedX,
+                             float& newSpeedY);
+
+    bool collideWithBat(float expectedX, float expectedY,
+                        float& collideTime, float& collideX,
+                        float& collideY, float& newSpeedX,
+                        float& newSpeedY);
+
 protected:
     Game& m_game;
     Circle m_shape;

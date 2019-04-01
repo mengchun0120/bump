@@ -64,5 +64,25 @@ void Game::process_input()
     inputManager.freePointerEvent(queue);
 }
 
+float Game::clampX(float x) const
+{
+    if(x < 0.0f) {
+        return 0.0f;
+    } else if(x > m_width) {
+        return m_width;
+    }
+    return x;
+}
+
+float Game::clampY(float y) const
+{
+    if(y < 0.0f) {
+        return 0.0f;
+    } else if(y > m_height) {
+        return m_height;
+    }
+    return y;
+}
+
 } // end of namespace bump
 

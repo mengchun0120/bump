@@ -33,6 +33,15 @@ public:
 
     void present();
 
+    float clampX(float x) const;
+
+    float clampY(float y) const;
+
+    const Bat& bat() const
+    {
+        return m_bat();
+    }
+
 private:
     void process_input();
 
