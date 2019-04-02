@@ -39,7 +39,7 @@ public:
 
     const Bat& bat() const
     {
-        return m_bat();
+        return m_bat;
     }
 
 private:
