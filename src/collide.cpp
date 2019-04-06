@@ -24,7 +24,7 @@ bool circleCollideLine(float& collideTime, float& newCenter,
         }
 
         impactPos = line + radius;
-        impactTime = dist / speed;
+        impactTime = dist / (-speed);
 
     } else {
         dist = line - center - radius;
@@ -33,7 +33,7 @@ bool circleCollideLine(float& collideTime, float& newCenter,
         }
 
         impactPos = line - radius;
-        impactTime = dist / (-speed);
+        impactTime = dist / speed;
     }
 
     if(impactTime > timeDelta) {
