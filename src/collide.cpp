@@ -10,40 +10,48 @@ bool overlapRect(float left1, float bottom1, float right1, float top1,
            bottom1 < top2 && top1 > bottom2;
 }
 
-bool circleCollideLine(float& collideTime, float& newCenter,
-                       float center, float radius, float speed,
-                       float line, bool collideFromAbove,
-                       float timeDelta)
+CollideResult circleCollideLine(float& collideTime, float& newCenter,
+                                float center, float radius, float speed,
+                                float line, bool fromAbove,
+                                float timeDelta)
 {
     float dist, impactTime, impactPos;
 
-    if(collideFromAbove) {
-        dist = center - radius - line;
-        if(dist < 0 || speed > 0) {
-            return false;
+    if(fromAbove) {
+        dist = center - line;
+        if(dist < radius) {
+            return COLLIDE_ALREADY;
         }
 
+        if(speed >= 0.0f) {
+            return COLLIDE_NOTHING;
+        }
+
+        impactTime = (dist - radius) / (-speed);
         impactPos = line + radius;
-        impactTime = dist / (-speed);
 
     } else {
-        dist = line - center - radius;
-        if(dist < 0 || speed < 0) {
-            return false;
+        dist = line - center;
+        if(dist < radius) {
+            return COLLIDE_ALREADY;
         }
 
+        if(speed <= 0.0f) {
+            return COLLIDE_NOTHING;
+        }
+
+        impactTime = (dist - radius) / speed;
         impactPos = line - radius;
-        impactTime = dist / speed;
     }
 
     if(impactTime > timeDelta) {
-        return false;
+        return COLLIDE_NOTHING;
     }
 
     collideTime = impactTime;
     newCenter = impactPos;
 
-    return true;
+    return COLLIDE_INTIME;
 }
 
 CollideResult circleCollideLineSegment(float& collideTime,
@@ -51,68 +59,42 @@ CollideResult circleCollideLineSegment(float& collideTime,
                        float centerX, float centerY, float radius,
                        float speedX, float speedY,
                        float left, float right, float line,
-                       bool collideFromAbove,
-                       float timeDelta)
+                       bool fromAbove, float timeDelta)
 {
-    float collideLineTime, collideY;
-    bool collideLine = circleCollideLine(collideLineTime, collideY,
-                                         centerY, radius, speedY,
-                                         line, collideFromAbove,
-                                         timeDelta);
+    float impactTime, impactY;
+    CollideResult ret;
 
-    if(!collideLine) {
+    ret = circleCollideLine(impactTime, impactY,
+                            centerY, radius, speedY,
+                            line, fromAbove,
+                            timeDelta);
+
+    if(ret == COLLIDE_ALREADY || ret == COLLIDE_NOTHING) {
+        return ret;
+    }
+
+    float impactX = centerX + impactTime * speedX;
+
+    if(impactX >= left && impactX <= right) {
+        collideTime = impactTime;
+        newCenterX = impactX;
+        newCenterY = impactY;
+        return COLLIDE_INTIME;
+    }
+
+    if(centerX >= left && centerX <= right) {
         return COLLIDE_NOTHING;
     }
 
-    float collideX = centerX + collideLineTime * speedX;
-    if(collideX < left || collideX > right) {
-        return COLLIDE_LINE_ONLY;
+    if(centerX < left) {
+        if(impactX <= centerX || impactX > right) {
+            return COLLIDE_NOTHING;
+        }
+    } else if(impactX >= centerX || impactX < left) {
+        return COLLIDE_NOTHING;
     }
 
-    collideTime = collideLineTime;
-    newCenterX = collideX;
-    newCenterY = collideY;
-
-    return COLLIDE_TRUELY;
-}
-
-CollideResult circleCollideTwoLines(float& collideTime,
-                    float& newCenterX, float& newCenterY,
-                    float& collideLine,
-                    float centerX, float centerY, float radius,
-                    float speedX, float speedY,
-                    float left, float right, float bottom, float top,
-                    float timeDelta)
-{
-    CollideResult result;
-
-    result = circleCollideLineSegment(collideTime,
-                                      newCenterX, newCenterY,
-                                      centerX, centerY, radius,
-                                      speedX, speedY,
-                                      left, right, top,
-                                      true,
-                                      timeDelta);
-
-    if(result == COLLIDE_TRUELY || result == COLLIDE_LINE_ONLY) {
-        collideLine = top;
-        return result;
-    }
-
-    result = circleCollideLineSegment(collideTime,
-                                      newCenterX, newCenterY,
-                                      centerX, centerY, radius,
-                                      speedX, speedY,
-                                      left, right, bottom,
-                                      false,
-                                      timeDelta);
-
-    if(result == COLLIDE_TRUELY || result == COLLIDE_LINE_ONLY) {
-        collideLine = bottom;
-        return result;
-    }
-
-    return COLLIDE_NOTHING;
+    return COLLIDE_POTENTIAL;
 }
 
 bool circleCollidePoint(float& collideTime,
@@ -156,17 +138,66 @@ bool circleCollidePoint(float& collideTime,
     return true;
 }
 
+CollideResult circleCollideTwoLines(float& collideTime,
+                            float& newCenterX, float& newCenterY,
+                            float& collideLine,
+                            float centerX, float centerY, float radius,
+                            float speedX, float speedY,
+                            float left, float right, float bottom, float top,
+                            float timeDelta)
+{
+    if(centerY >= bottom && centerY <= top) {
+        return COLLIDE_CONTAINED;
+    }
+
+    float line;
+    bool fromAbove;
+
+    if(centerY > top) {
+        fromAbove = true;
+        line = top;
+    } else {
+        fromAbove = false;
+        line = bottom;
+    }
+
+    float impactTime, impactX, impactY;
+    CollideResult ret;
+
+    ret  = circleCollideLineSegment(impactTime,
+                                    impactX, impactY,
+                                    centerX, centerY, radius,
+                                    speedX, speedY,
+                                    left, right, top,
+                                    true, timeDelta);
+
+    if(ret == COLLIDE_NOTHING) {
+        return COLLIDE_NOTHING;
+    }
+
+    if(ret == COLLIDE_INTIME) {
+        collideTime = impactTime;
+        newCenterX = impactX;
+        newCenterY = impactY;
+        return COLLIDE_INTIME;
+    }
+
+    collideLine = line;
+    return ret;
+}
+
 CollideResult circleCollideRect(float& collideTime,
                       float& newCenterX, float& newCenterY,
+                      float& collideX, float& collideY,
                       float centerX, float centerY, float radius,
                       float speedX, float speedY,
                       float left, float bottom, float right, float top,
                       float timeDelta)
 {
     float horizontalLine;
-    CollideResult resultHorizontal;
+    CollideResult horizontalResult;
 
-    resultHorizontal = circleCollideTwoLines(collideTime,
+    horizontalResult = circleCollideTwoLines(collideTime,
                                     newCenterX, newCenterY,
                                     horizontalLine,
                                     centerX, centerY, radius,
@@ -174,14 +205,15 @@ CollideResult circleCollideRect(float& collideTime,
                                     left, right, bottom, top,
                                     timeDelta);
 
-    if(resultHorizontal == COLLIDE_TRUELY) {
-        return COLLIDE_HORIZONTAL_LINE;
+    if(horizontalResult == COLLIDE_NOTHING ||
+       horizontalResult == COLLIDE_INTIME) {
+        return horizontalResult;
     }
 
     float verticalLine;
-    CollideResult resultVertical;
+    CollideResult verticalResult;
 
-    resultVertical = circleCollideTwoLines(collideTime,
+    verticalResult = circleCollideTwoLines(collideTime,
                                     newCenterY, newCenterX,
                                     verticalLine,
                                     centerY, centerX, radius,
@@ -189,26 +221,24 @@ CollideResult circleCollideRect(float& collideTime,
                                     bottom, top, left, right,
                                     timeDelta);
 
-    if(resultVertical == COLLIDE_TRUELY) {
-        return COLLIDE_VERTICAL_LINE;
+    if(verticalResult == COLLIDE_NOTHING ||
+       verticalResult == COLLIDE_INTIME) {
+        return verticalResult;
     }
 
-    if(resultHorizontal == COLLIDE_NOTHING ||
-       resultVertical == COLLIDE_NOTHING) {
-        return COLLIDE_NOTHING;
-    }
-
-    bool collidePoint;
-
-    collidePoint = circleCollidePoint(collideTime,
+    if(horizontalResult == COLLIDE_POTENTIAL ||
+       verticalResult == COLLIDE_POTENTIAL) {
+        bool ret = circleCollidePoint(collideTime,
                                     newCenterX, newCenterY,
                                     centerX, centerY, radius,
                                     speedX, speedY,
                                     verticalLine, horizontalLine,
                                     timeDelta);
-
-    if(collidePoint) {
-        return COLLIDE_POINT;
+        if(ret) {
+            collideX = verticalLine;
+            collideY = horizontalLine;
+            return COLLIDE_POINT;
+        }
     }
 
     return COLLIDE_NOTHING;
