@@ -114,7 +114,7 @@ bool circleCollidePoint(float& collideTime,
 
     float b = dx*speedX + dy*speedY;
 
-    if(b < 0) {
+    if(b > 0) {
         return false;
     }
 
@@ -125,7 +125,8 @@ bool circleCollidePoint(float& collideTime,
         return false;
     }
 
-    float impactTime = (b - sqrt(d)) / a;
+    float t = sqrt(d);
+    float impactTime = (-b - t) / a;
 
     if(impactTime > timeDelta) {
         return false;
@@ -168,8 +169,8 @@ CollideResult circleCollideTwoLines(float& collideTime,
                                     impactX, impactY,
                                     centerX, centerY, radius,
                                     speedX, speedY,
-                                    left, right, top,
-                                    true, timeDelta);
+                                    left, right, line,
+                                    fromAbove, timeDelta);
 
     if(ret == COLLIDE_NOTHING) {
         return COLLIDE_NOTHING;
@@ -205,9 +206,12 @@ CollideResult circleCollideRect(float& collideTime,
                                     left, right, bottom, top,
                                     timeDelta);
 
-    if(horizontalResult == COLLIDE_NOTHING ||
-       horizontalResult == COLLIDE_INTIME) {
-        return horizontalResult;
+    if(horizontalResult == COLLIDE_NOTHING) {
+        return COLLIDE_NOTHING;
+    }
+
+    if(horizontalResult == COLLIDE_INTIME) {
+        return COLLIDE_HORIZONTAL;
     }
 
     float verticalLine;
@@ -221,9 +225,12 @@ CollideResult circleCollideRect(float& collideTime,
                                     bottom, top, left, right,
                                     timeDelta);
 
-    if(verticalResult == COLLIDE_NOTHING ||
-       verticalResult == COLLIDE_INTIME) {
-        return verticalResult;
+    if(verticalResult == COLLIDE_NOTHING) {
+        return COLLIDE_NOTHING;
+    }
+
+    if(verticalResult == COLLIDE_INTIME) {
+        return COLLIDE_VERTICAL;
     }
 
     if(horizontalResult == COLLIDE_POTENTIAL ||
