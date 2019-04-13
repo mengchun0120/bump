@@ -276,4 +276,138 @@ TEST(CircleCollideRect, CollideCase4)
     ASSERT_DOUBLE_EQ(newCenterY, 124.0f);
     ASSERT_DOUBLE_EQ(collideX, 200.0f);
     ASSERT_DOUBLE_EQ(collideY, 120.0f);
+
+    centerX = 87.0f;
+    centerY = 86.0f;
+    speedX = 10.0f;
+    speedY = 10.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_POINT);
+    ASSERT_DOUBLE_EQ(collideTime, 1.0f);
+    ASSERT_DOUBLE_EQ(newCenterX, 97.0f);
+    ASSERT_DOUBLE_EQ(newCenterY, 96.0f);
+    ASSERT_DOUBLE_EQ(collideX, 100.0f);
+    ASSERT_DOUBLE_EQ(collideY, 100.0f);
 }
+
+TEST(CircleCollideRect, NotCollideCase1)
+{
+    float left = 100.0f, bottom = 100.0f, right = 200.0f, top = 120.0f;
+    float centerX, centerY, radius = 10.0f;
+    float speedX, speedY;
+    float timeDelta = 2.0f;
+    float collideTime, newCenterX, newCenterY;
+    float collideX, collideY;
+    CollideResult result;
+
+    centerX = 175.0f;
+    centerY = 135.0f;
+    speedX = 10.0f;
+    speedY = 10.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+
+    centerX = 135.0f;
+    centerY = 160.0f;
+    speedX = 10.0f;
+    speedY = 10.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+
+    centerX = 85.0f;
+    centerY = 115.0f;
+    speedX = -10.0f;
+    speedY = 10.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+
+    centerX = 40.0f;
+    centerY = 115.0f;
+    speedX = 10.0f;
+    speedY = 10.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+}
+
+TEST(CircleCollideRect, NotCollideCase2)
+{
+    float left = 100.0f, bottom = 100.0f, right = 200.0f, top = 120.0f;
+    float centerX, centerY, radius = 10.0f;
+    float speedX, speedY;
+    float timeDelta = 2.0f;
+    float collideTime, newCenterX, newCenterY;
+    float collideX, collideY;
+    CollideResult result;
+
+    centerX = 215.0f;
+    centerY = 85.0f;
+    speedX = 10.0f;
+    speedY = 0.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+
+    centerX = 67.0f;
+    centerY = 66.0f;
+    speedX = 10.0f;
+    speedY = 10.0f;
+    radius = 5.0f;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+}
+
