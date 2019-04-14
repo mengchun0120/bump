@@ -411,3 +411,92 @@ TEST(CircleCollideRect, NotCollideCase2)
     ASSERT_EQ(result, COLLIDE_NOTHING);
 }
 
+TEST(RectCollideCircle, CollideCase)
+{
+    float left = 100.0f, bottom = 100.0f, right = 200.0f, top = 120.0f;
+    float targetLeft, circleX, circleY, radius = 5.0f;
+    float newLeft, collideX, collideY;
+    CollideResult result;
+
+    circleX = 213.0f;
+    circleY = 124.0f;
+    targetLeft = 115.0f;
+
+    result = rectCollideCircleHorizontal(newLeft, collideX, collideY,
+                                         left, bottom, right, top,
+                                         targetLeft,
+                                         circleX, circleY, radius);
+
+    ASSERT_EQ(result, COLLIDE_POINT);
+    ASSERT_DOUBLE_EQ(newLeft, 110.0f);
+    ASSERT_DOUBLE_EQ(collideX, 210.0f);
+    ASSERT_DOUBLE_EQ(collideY, 120.0f);
+
+    circleX = 91.0f;
+    circleY = 97.0f;
+    targetLeft = 90.0f;
+
+    result = rectCollideCircleHorizontal(newLeft, collideX, collideY,
+                                         left, bottom, right, top,
+                                         targetLeft,
+                                         circleX, circleY, radius);
+
+    ASSERT_EQ(result, COLLIDE_POINT);
+    ASSERT_DOUBLE_EQ(newLeft, 95.0f);
+    ASSERT_DOUBLE_EQ(collideX, 95.0f);
+    ASSERT_DOUBLE_EQ(collideY, 100.0f);
+
+    circleX = 210.0f;
+    circleY = 115.0f;
+    targetLeft = 115.0f;
+
+    result = rectCollideCircleHorizontal(newLeft, collideX, collideY,
+                                         left, bottom, right, top,
+                                         targetLeft,
+                                         circleX, circleY, radius);
+
+    ASSERT_EQ(result, COLLIDE_VERTICAL);
+    ASSERT_EQ(newLeft, 105.0f);
+
+    circleX = 90.0f;
+    circleY = 95.0f;
+    targetLeft = 80.0f;
+
+    result = rectCollideCircleHorizontal(newLeft, collideX, collideY,
+                                         left, bottom, right, top,
+                                         targetLeft,
+                                         circleX, circleY, radius);
+
+    ASSERT_EQ(result, COLLIDE_HORIZONTAL);
+    ASSERT_EQ(newLeft, 80.0f);
+}
+
+TEST(RectCollideCircle, NotCollideCase)
+{
+    float left = 100.0f, bottom = 100.0f, right = 200.0f, top = 120.0f;
+    float targetLeft, circleX, circleY, radius = 5.0f;
+    float newLeft, collideX, collideY;
+    CollideResult result;
+
+    circleX = 150.0f;
+    circleY = 130.0f;
+    targetLeft = 115.0f;
+
+    result = rectCollideCircleHorizontal(newLeft, collideX, collideY,
+                                         left, bottom, right, top,
+                                         targetLeft,
+                                         circleX, circleY, radius);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+
+    circleX = 250.0f;
+    circleY = 115.0f;
+    targetLeft = 120.0f;
+
+    result = rectCollideCircleHorizontal(newLeft, collideX, collideY,
+                                         left, bottom, right, top,
+                                         targetLeft,
+                                         circleX, circleY, radius);
+
+    ASSERT_EQ(result, COLLIDE_NOTHING);
+}

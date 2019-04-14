@@ -53,6 +53,12 @@ CollideResult circleCollideRect(float& collideTime,
                       float left, float bottom, float right, float top,
                       float timeDelta);
 
+CollideResult rectCollideCircleHorizontal(float& newLeft,
+                        float& collideX, float& collideY,
+                        float left, float bottom, float right, float top,
+                        float targetLeft,
+                        float circleX, float circleY, float radius);
+
 } // end of namespace bump
 
 #endif

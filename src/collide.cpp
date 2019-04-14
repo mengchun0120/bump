@@ -233,7 +233,7 @@ CollideResult circleCollideRect(float& collideTime,
         return COLLIDE_VERTICAL;
     }
 
-    if(horizontalResult == COLLIDE_POTENTIAL ||
+    if(horizontalResult == COLLIDE_POTENTIAL &&
        verticalResult == COLLIDE_POTENTIAL) {
         bool ret = circleCollidePoint(collideTime,
                                     newCenterX, newCenterY,
@@ -249,6 +249,69 @@ CollideResult circleCollideRect(float& collideTime,
     }
 
     return COLLIDE_NOTHING;
+}
+
+CollideResult rectCollideCircleHorizontal(float& newLeft,
+                        float& collideX, float& collideY,
+                        float left, float bottom, float right, float top,
+                        float targetLeft,
+                        float circleX, float circleY, float radius)
+{
+    float circleTop = circleY + radius;
+    float circleBottom = circleY - radius;
+
+    if(circleTop < bottom || circleBottom > top) {
+        return COLLIDE_NOTHING;
+    }
+
+    float circleLeft, circleRight;
+    float leftBound, rightBound;
+    CollideResult potentialResult;
+
+    if(targetLeft < left) {
+        leftBound = targetLeft;
+        rightBound = right;
+    } else {
+        leftBound = left;
+        rightBound = right + targetLeft - left;
+    }
+
+    if(circleY >= bottom && circleY <= top) {
+        circleLeft = circleX - radius;
+        circleRight = circleX + radius;
+        potentialResult = COLLIDE_VERTICAL;
+    } else {
+        float d = circleY > top ? circleY - top : bottom - circleY;
+        float dx = sqrt(radius * radius - d * d);
+
+        circleLeft = circleX - dx;
+        circleRight = circleX + dx;
+        potentialResult = dx == 0.0f ? COLLIDE_HORIZONTAL : COLLIDE_POINT;
+    }
+
+    if(circleLeft > rightBound || circleRight < leftBound) {
+        return COLLIDE_NOTHING;
+    }
+
+    if(potentialResult != COLLIDE_HORIZONTAL) {
+        if(circleX <= left) {
+            newLeft = circleRight;
+            if(potentialResult == COLLIDE_POINT) {
+                collideX = circleRight;
+                collideY = circleY > top ? top : bottom;
+            }
+        } else {
+            newLeft = circleLeft - (right - left);
+            if(potentialResult == COLLIDE_POINT) {
+                collideX = circleLeft;
+                collideY = circleY > top ? top : bottom;
+            }
+        }
+    } else {
+        newLeft = targetLeft;
+    }
+
+    return potentialResult;
 }
 
 } // end of namespace bump
