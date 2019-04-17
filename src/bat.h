@@ -26,6 +26,16 @@ public:
         return m_shape.height();
     }
 
+    float right() const
+    {
+        return x() + m_shape.width();
+    }
+
+    float top() const
+    {
+        return y() + m_shape.height();
+    }
+
 protected:
     float m_xBound;
     Rectangle m_shape;

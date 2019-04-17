@@ -11,11 +11,28 @@ class Game;
 
 class Ball: public GameObject {
 public:
+    struct CollideImpact {
+        float m_collideTime;
+        float m_newCenterX, m_newCenterY;
+        float m_newSpeedX, m_newSpeedY;
+
+        CollideImpact& operator=(const CollideImpact& other)
+        {
+            m_collideTime = other.m_collideTime;
+            m_newCenterX = other.m_newCenterX;
+            m_newCenterY = other.m_newCenterY;
+            m_newSpeedX = other.m_newSpeedX;
+            m_newSpeedY = other.m_newSpeedY;
+            return *this;
+        }
+    };
+
+public:
     Ball(Game& game);
 
     virtual ~Ball();
 
-    void init(float x, float y, float speedX, float speedY);
+    void init(float x, float y, float speed);
 
     float radius() const
     {
@@ -27,19 +44,16 @@ public:
     bool update(float timeDelta);
 
 private:
-    bool collideWithBoundary(float expectedX, float expectedY,
-                             float& collideTime, float& collideX,
-                             float& collideY, float& newSpeedX,
-                             float& newSpeedY);
+    bool collideBoundary(CollideImpact& impact, float timeDelta);
 
-    bool collideWithBat(float expectedX, float expectedY,
-                        float& collideTime, float& collideX,
-                        float& collideY, float& newSpeedX,
-                        float& newSpeedY);
+    bool collideRect(CollideImpact& impact,
+                     float left, float bottom, float right, float top,
+                     float timeDelta);
 
 protected:
     Game& m_game;
     Circle m_shape;
+    float m_speed;
     float m_speedX, m_speedY;
     float m_color[Constants::NUM_FLOATS_COLOR];
 };

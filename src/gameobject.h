@@ -26,6 +26,16 @@ public:
         return m_pos[1];
     }
 
+    float x() const
+    {
+        return m_pos[0];
+    }
+
+    float y() const
+    {
+        return m_pos[1];
+    }
+
 protected:
     float m_pos[Constants::NUM_FLOATS_PER_VERTEX];
 };

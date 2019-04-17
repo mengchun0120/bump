@@ -1,5 +1,7 @@
 #include <cmath>
-#include <algorithm>
+#include <ctime>
+#include <cstdlib>
+#include "collide.h"
 #include "ball.h"
 #include "game.h"
 
@@ -17,12 +19,16 @@ Ball::~Ball()
 {
 }
 
-void Ball::init(float x, float y, float speedX, float speedY)
+void Ball::init(float x, float y, float speed)
 {
     m_pos[0] = x;
     m_pos[1] = y;
-    m_speedX = speedX;
-    m_speedY = speedY;
+    m_speed = speed;
+
+    float factor = (float)(sqrt(2.0) / 2.0);
+    bool moveLeft = ((float)rand() / (float)RAND_MAX) > 0.5f;
+    m_speedX = moveLeft ? -m_speed * factor : m_speed * factor;
+    m_speedY = speed * factor;
 }
 
 void Ball::draw(BumpShaderProgram& program)
@@ -32,82 +38,132 @@ void Ball::draw(BumpShaderProgram& program)
 
 bool Ball::update(float timeDelta)
 {
-    float x = m_pos[0];
-    float y = m_pos[1];
-    float radius = m_shape.radius();
-    float expectedX = x + m_speedX * timeDelta;
-    float expectedY = y + m_speedY * timeDelta;
-
-    float collideX, collideY, newSpeedX, newSpeedY, collideTime;
+    CollideImpact finalImpact, impact;
     bool collide = false;
 
-    collide = collideWithBoundary(expectedX, expectedY, collideTime, collideX,
-                                  collideY, newSpeedX, newSpeedY);
+    collide = collideBoundary(finalImpact, timeDelta);
 
-/*    float ballLeft = m_game.clampX(std::min(x, expectedX) - radius);
-    float ballRight = m_game.clampX(std::max(x, expectedX) + radius);
-    float ballBottom = m_game.clampY(std::min(y, expectedY) - radius);
-    float ballTop = m_game.clampY(std::max(y, expectedY) + radius);*/
+    const Bat& bat = m_game.bat();
+    if(collideRect(impact, bat.x(), bat.y(), bat.right(),
+                   bat.top(), timeDelta)) {
 
-    if(!collide) {
-        m_pos[0] = expectedX;
-        m_pos[1] = expectedY;
-    } else {
-        m_pos[0] = collideX;
-        m_pos[1] = collideY;
-        m_speedX = newSpeedX;
-        m_speedY = newSpeedY;
-    }
-
-    return m_pos[1] > -radius;
-}
-
-bool Ball::collideWithBoundary(float expectedX, float expectedY,
-                               float& collideTime, float& collideX,
-                               float& collideY, float& newSpeedX,
-                               float& newSpeedY)
-{
-    float x = m_pos[0];
-    float y = m_pos[1];
-    float radius = m_shape.radius();
-    bool collide = false;
-
-    if(expectedX <= radius) {
-        collideTime = (x - radius) / (-m_speedX);
-        collideX = radius;
-        collideY = y + m_speedY * collideTime;
-        newSpeedX = -m_speedX;
-        newSpeedY = m_speedY;
-        collide = true;
-    } else if(expectedX >= m_game.width() - radius) {
-        collideTime = (m_game.width() - radius - x) / m_speedX;
-        collideX = m_game.width() - radius;
-        collideY = y + m_speedY * collideTime;
-        newSpeedX = -m_speedX;
-        newSpeedY = m_speedY;
-        collide = true;
-    }
-
-    if(expectedY >= m_game.height() - radius) {
-        float t1 = (m_game.height() - radius) / m_speedY;
-        if(!collide || t1 < collideTime) {
-            collideTime = (m_game.height() - radius - y) / m_speedY;
-            collideX = x + m_speedX * collideTime;
-            collideY = m_game.height() - radius;
-            newSpeedX = m_speedX;
-            newSpeedY = -m_speedY;
+        if(collide) {
+            if(finalImpact.m_collideTime > impact.m_collideTime) {
+                finalImpact = impact;
+            }
+        } else {
+            finalImpact = impact;
             collide = true;
         }
     }
 
-    return collide;
+    if(!collide) {
+        m_pos[0] += m_speedX * timeDelta;
+        m_pos[1] += m_speedY * timeDelta;
+    } else {
+        m_pos[0] = finalImpact.m_newCenterX;
+        m_pos[1] = finalImpact.m_newCenterY;
+        m_speedX = finalImpact.m_newSpeedX;
+        m_speedY = finalImpact.m_newSpeedY;
+    }
+
+    return m_pos[1] > -radius();
 }
 
-bool Ball::collideWithBat(float expectedX, float expectedY,
-                          float& collideTime, float& collideX,
-                          float& collideY, float& newSpeedX,
-                          float& newSpeedY)
+bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 {
+    float tx = m_pos[0];
+    float ty = m_pos[1];
+    float radius = m_shape.radius();
+    CollideResult result;
+
+    result = circleCollideLine(impact.m_collideTime,
+                               impact.m_newCenterX,
+                               tx, radius, m_speedX,
+                               0, true,
+                               timeDelta);
+
+    if(result == COLLIDE_INTIME) {
+        impact.m_newCenterY = ty + m_speedY * impact.m_collideTime;
+        impact.m_newSpeedX = -m_speedX;
+        impact.m_newSpeedY = m_speedY;
+        return true;
+    }
+
+    result = circleCollideLine(impact.m_collideTime,
+                               impact.m_newCenterX,
+                               tx, radius, m_speedX,
+                               m_game.width(), false,
+                               timeDelta);
+
+    if(result == COLLIDE_INTIME) {
+        impact.m_newCenterY = ty + m_speedY * impact.m_collideTime;
+        impact.m_newSpeedX = -m_speedX;
+        impact.m_newSpeedY = m_speedY;
+        return true;
+    }
+
+    result = circleCollideLine(impact.m_collideTime,
+                               impact.m_newCenterY,
+                               ty, radius, m_speedY,
+                               m_game.height(), false,
+                               timeDelta);
+
+    if(result == COLLIDE_INTIME) {
+        impact.m_newCenterX = tx + m_speedX * impact.m_collideTime;
+        impact.m_newSpeedX = m_speedX;
+        impact.m_newSpeedY = -m_speedY;
+        return true;
+    }
+
+    return false;
+}
+
+bool Ball::collideRect(CollideImpact& impact,
+                       float left, float bottom, float right, float top,
+                       float timeDelta)
+{
+    float tx = m_pos[0];
+    float ty = m_pos[1];
+    float tradius = m_shape.radius();
+    CollideResult result;
+    float collideX, collideY;
+
+    result = circleCollideRect(impact.m_collideTime,
+                               impact.m_newCenterX, impact.m_newCenterY,
+                               collideX, collideY,
+                               tx, ty, tradius,
+                               m_speedX, m_speedY,
+                               left, bottom, right, top,
+                               timeDelta);
+
+    if(result == COLLIDE_NOTHING) {
+        return false;
+    }
+
+    switch(result) {
+    case COLLIDE_HORIZONTAL:
+        impact.m_newSpeedX = m_speedX;
+        impact.m_newSpeedY = -m_speedY;
+        break;
+
+    case COLLIDE_VERTICAL:
+        impact.m_newSpeedX = -m_speedX;
+        impact.m_newSpeedY = m_speedY;
+        break;
+
+    case COLLIDE_POINT:
+        {
+            float deltaX = impact.m_newCenterX - collideX;
+            float deltaY = impact.m_newCenterY - collideY;
+            float dist = sqrt(deltaX * deltaX + deltaY * deltaY);
+            impact.m_newSpeedX = m_speed * deltaX / dist;
+            impact.m_newSpeedY = m_speed * deltaY / dist;
+        }
+        break;
+    }
+
+    return true;
 }
 
 } // end of namespace bump

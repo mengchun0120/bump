@@ -5,11 +5,6 @@
 
 namespace bump {
 
-float toRad(float degree)
-{
-    return degree * 3.14159265359f / 180.0f;
-}
-
 Game::Game(std::shared_ptr<BumpShaderProgram>& program, float width, float height)
 : m_state(GAME_RUNNING)
 , m_program(program)
@@ -19,10 +14,9 @@ Game::Game(std::shared_ptr<BumpShaderProgram>& program, float width, float heigh
 , m_ball(*this)
 {
     float speed = 200.0f;
-    float angle = toRad(45.0f);
-    LOG_INFO("%f %f %f", m_bat.y(), m_bat.height(), m_ball.radius());
-    m_ball.init(width/2.0f, m_bat.y() + m_bat.height() + m_ball.radius(),
-                speed * cos(angle), speed * sin(angle));
+    m_ball.init(width/2.0f,
+                m_bat.y() + m_bat.height() + m_ball.radius(),
+                speed);
 }
 
 Game::~Game()
