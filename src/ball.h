@@ -4,6 +4,7 @@
 #include "gameobject.h"
 #include "circle.h"
 #include "constants.h"
+#include "collide.h"
 
 namespace bump {
 
@@ -43,12 +44,19 @@ public:
 
     bool update(float timeDelta);
 
+    bool collideBat(float& newLeft, float targetLeft);
+
 private:
     bool collideBoundary(CollideImpact& impact, float timeDelta);
 
     bool collideRect(CollideImpact& impact,
                      float left, float bottom, float right, float top,
                      float timeDelta);
+
+    void getNewSpeed(float& speedX, float& speedY,
+                     CollideResult result,
+                     float centerX, float centerY,
+                     float collideX, float collideY);
 
 protected:
     Game& m_game;

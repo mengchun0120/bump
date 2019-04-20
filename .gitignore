@@ -2,3 +2,4 @@ build/*
 *.swp
 log.txt
 test/build/*
+.vscode/*

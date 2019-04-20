@@ -1,7 +1,6 @@
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
-#include "collide.h"
 #include "ball.h"
 #include "game.h"
 
@@ -70,6 +69,28 @@ bool Ball::update(float timeDelta)
     return m_pos[1] > -radius();
 }
 
+bool Ball::collideBat(float& newLeft, float targetLeft)
+{
+    float collideX, collideY;
+    const Bat& bat = m_game.bat();
+    CollideResult result = rectCollideCircleHorizontal(newLeft,
+                        collideX, collideY,
+                        bat.x(), bat.y(),
+                        bat.x() + bat.width(), bat.y() + bat.height(),
+                        targetLeft,
+                        m_pos[0], m_pos[1], m_shape.radius());
+
+    if(result == COLLIDE_NOTHING) {
+        return false;
+    }
+
+    getNewSpeed(m_speedX, m_speedY, 
+                result, m_pos[0], m_pos[1],
+                collideX, collideY);
+
+    return true;
+}
+
 bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 {
     float tx = m_pos[0];
@@ -119,7 +140,7 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
     return false;
 }
 
-bool Ball::collideRect(CollideImpact& impact,
+bool Ball::collideRect(CollideImpact &impact,
                        float left, float bottom, float right, float top,
                        float timeDelta)
 {
@@ -141,29 +162,39 @@ bool Ball::collideRect(CollideImpact& impact,
         return false;
     }
 
+    getNewSpeed(impact.m_newSpeedX, impact.m_newSpeedY,
+                result, impact.m_newCenterX, impact.m_newCenterY,
+                collideX, collideY);
+
+    return true;
+}
+
+void Ball::getNewSpeed(float& speedX, float& speedY,
+                       CollideResult result,
+                       float centerX, float centerY,
+                       float collideX, float collideY)
+{
     switch(result) {
     case COLLIDE_HORIZONTAL:
-        impact.m_newSpeedX = m_speedX;
-        impact.m_newSpeedY = -m_speedY;
+        speedX = m_speedX;
+        speedY = -m_speedY;
         break;
 
     case COLLIDE_VERTICAL:
-        impact.m_newSpeedX = -m_speedX;
-        impact.m_newSpeedY = m_speedY;
+        speedX = -m_speedX;
+        speedY = m_speedY;
         break;
 
     case COLLIDE_POINT:
         {
-            float deltaX = impact.m_newCenterX - collideX;
-            float deltaY = impact.m_newCenterY - collideY;
+            float deltaX = centerX - collideX;
+            float deltaY = centerY - collideY;
             float dist = sqrt(deltaX * deltaX + deltaY * deltaY);
-            impact.m_newSpeedX = m_speed * deltaX / dist;
-            impact.m_newSpeedY = m_speed * deltaY / dist;
+            speedX = m_speed * deltaX / dist;
+            speedY = m_speed * deltaY / dist;
         }
         break;
     }
-
-    return true;
 }
 
 } // end of namespace bump

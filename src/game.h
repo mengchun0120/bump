@@ -2,10 +2,13 @@
 #define INCLUDE_GAME
 
 #include <memory>
-#include "bat.h"
-#include "ball.h"
+#include <ball.h>
+#include <bat.h>
 
 namespace bump {
+
+class BumpShaderProgram;
+class Queue;
 
 class Game {
 public:
@@ -42,8 +45,23 @@ public:
         return m_bat;
     }
 
+    Bat& bat()
+    {
+        return m_bat;
+    }
+
+    const Ball& ball() const
+    {
+        return m_ball;
+    }
+
+    Ball& ball()
+    {
+        return m_ball;
+    }
+
 private:
-    void process_input();
+    void process_input(Queue& queue);
 
 private:
     State m_state;

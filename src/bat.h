@@ -6,9 +6,11 @@
 
 namespace bump {
 
+class Game;
+
 class Bat: public GameObject {
 public:
-    Bat(float gameWidth, float gameHeight);
+    Bat(Game& game);
 
     virtual ~Bat();
 
@@ -37,6 +39,7 @@ public:
     }
 
 protected:
+    Game& m_game;
     float m_xBound;
     Rectangle m_shape;
     float m_fillColor[Constants::NUM_FLOATS_COLOR];

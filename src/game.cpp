@@ -1,6 +1,8 @@
 #include <cmath>
 #include "log.h"
 #include "inputmanager.h"
+#include "ball.h"
+#include "bat.h"
 #include "game.h"
 
 namespace bump {
@@ -10,7 +12,7 @@ Game::Game(std::shared_ptr<BumpShaderProgram>& program, float width, float heigh
 , m_program(program)
 , m_width(width)
 , m_height(height)
-, m_bat(width, height)
+, m_bat(*this)
 , m_ball(*this)
 {
     float speed = 200.0f;
@@ -29,7 +31,13 @@ void Game::update(float timeDelta)
         return;
     }
 
-    process_input();
+    Queue queue;
+    InputManager& inputManager = InputManager::singleton();
+    inputManager.loadPointerEvent(queue);
+
+    process_input(queue);
+
+    inputManager.freePointerEvent(queue);
 
     if(!m_ball.update(timeDelta)) {
         m_state = GAME_STOP;
@@ -42,20 +50,13 @@ void Game::present()
     m_ball.draw(*m_program);
 }
 
-void Game::process_input()
+void Game::process_input(Queue& queue)
 {
-    InputManager& inputManager = InputManager::singleton();
-    Queue queue;
-
-    inputManager.loadPointerEvent(queue);
-
     PointerEvent *event = reinterpret_cast<PointerEvent *>(queue.first());
     while(event) {
         m_bat.move(event->m_x);
         event = reinterpret_cast<PointerEvent *>(event->m_next);
     }
-
-    inputManager.freePointerEvent(queue);
 }
 
 float Game::clampX(float x) const
