@@ -1,8 +1,11 @@
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 #include "log.h"
 #include "inputmanager.h"
 #include "ball.h"
 #include "bat.h"
+#include "box.h"
 #include "game.h"
 
 namespace bump {
@@ -14,6 +17,7 @@ Game::Game(std::shared_ptr<BumpShaderProgram>& program, float width, float heigh
 , m_height(height)
 , m_bat(*this)
 , m_ball(*this)
+, m_boxMatrix(*this)
 {
     float speed = 200.0f;
     m_ball.init(width/2.0f,
@@ -46,6 +50,7 @@ void Game::update(float timeDelta)
 
 void Game::present()
 {
+    m_boxMatrix.draw(*m_program);
     m_bat.draw(*m_program);
     m_ball.draw(*m_program);
 }

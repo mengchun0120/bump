@@ -6,6 +6,7 @@
 #include "rectangle.h"
 #include "circle.h"
 #include "inputmanager.h"
+#include "box.h"
 #include "app.h"
 
 namespace bump {
@@ -168,6 +169,7 @@ void App::updateViewport()
 
 void App::initGame()
 {
+    Box::initShape();
     m_game = new Game(m_program, m_viewportWidth, m_viewportHeight);
     InputManager::singleton().start();
     m_deltaSmoother.start();

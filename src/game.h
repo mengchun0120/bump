@@ -2,12 +2,12 @@
 #define INCLUDE_GAME
 
 #include <memory>
-#include <ball.h>
-#include <bat.h>
+#include "ball.h"
+#include "bat.h"
+#include "boxmatrix.h"
 
 namespace bump {
 
-class BumpShaderProgram;
 class Queue;
 
 class Game {
@@ -64,12 +64,16 @@ private:
     void process_input(Queue& queue);
 
 private:
+    static const unsigned int NUM_BOX_ROWS = 5;
+    static const unsigned int NUM_BOX_COLS = 7;
+
     State m_state;
     std::shared_ptr<BumpShaderProgram> m_program;
     float m_width;
     float m_height;
     Bat m_bat;
     Ball m_ball;
+    BoxMatrix m_boxMatrix;
 };
 
 } // end of namespace bump
