@@ -76,13 +76,20 @@ bool App::init()
 
 bool App::run()
 {
+    Queue queue;
+    InputManager& inputManager = InputManager::singleton();
+    float delta;
+
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float delta = m_deltaSmoother.getTimeDelta();
+        delta = m_deltaSmoother.getTimeDelta();
+        inputManager.loadPointerEvent(queue);
 
-        m_game->update(delta);
+        m_game->update(queue, delta);
         m_game->present();
+
+        inputManager.freePointerEvent(queue);
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();

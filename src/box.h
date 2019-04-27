@@ -29,7 +29,27 @@ public:
 
     virtual void draw(BumpShaderProgram& program);
 
+    float right() const
+    {
+        return m_pos[0] + k_shape.width();
+    }
+
+    float top() const
+    {
+        return m_pos[1] + k_shape.height();
+    }
+
     bool onHit();
+
+    int life() const
+    {
+        return m_life;
+    }
+
+    int type() const
+    {
+        return m_type;
+    }
 
 private:
     static Rectangle k_shape;

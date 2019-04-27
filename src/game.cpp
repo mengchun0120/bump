@@ -29,22 +29,24 @@ Game::~Game()
 {
 }
 
-void Game::update(float timeDelta)
+void Game::update(Queue& queue, float timeDelta)
 {
     if(m_state != GAME_RUNNING) {
         return;
     }
 
-    Queue queue;
-    InputManager& inputManager = InputManager::singleton();
-    inputManager.loadPointerEvent(queue);
-
     process_input(queue);
 
-    inputManager.freePointerEvent(queue);
-
     if(!m_ball.update(timeDelta)) {
+        // Game failed
         m_state = GAME_STOP;
+        return;
+    }
+
+    if(m_boxMatrix.boxCount() == 0) {
+        // Clear all the box
+        m_state = GAME_STOP;
+        return;
     }
 }
 

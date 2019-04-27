@@ -2,7 +2,9 @@
 #include <ctime>
 #include <cstdlib>
 #include "ball.h"
+#include "box.h"
 #include "game.h"
+#include "log.h"
 
 namespace bump {
 
@@ -46,13 +48,19 @@ bool Ball::update(float timeDelta)
     if(collideRect(impact, bat.x(), bat.y(), bat.right(),
                    bat.top(), timeDelta)) {
 
-        if(collide) {
-            if(finalImpact.m_collideTime > impact.m_collideTime) {
-                finalImpact = impact;
-            }
-        } else {
-            finalImpact = impact;
+        if(!collide || impact.m_collideTime < finalImpact.m_collideTime) {
             collide = true;
+            finalImpact = impact;
+        }
+    }
+
+    Box* box = nullptr;
+    int row, col;
+
+    if(collideBoxMatrix(impact, box, row, col, timeDelta)) {
+        if(!collide || impact.m_collideTime < finalImpact.m_collideTime) {
+            collide = true;
+            finalImpact = impact;
         }
     }
 
@@ -64,27 +72,34 @@ bool Ball::update(float timeDelta)
         m_pos[1] = finalImpact.m_newCenterY;
         m_speedX = finalImpact.m_newSpeedX;
         m_speedY = finalImpact.m_newSpeedY;
+
+        if(box) {
+            if(!box->onHit()) {
+                m_game.boxMatrix().clearBox(row, col);
+            }
+        }
     }
 
     return m_pos[1] > -radius();
 }
+
 
 bool Ball::collideBat(float& newLeft, float targetLeft)
 {
     float collideX, collideY;
     const Bat& bat = m_game.bat();
     CollideResult result = rectCollideCircleHorizontal(newLeft,
-                        collideX, collideY,
-                        bat.x(), bat.y(),
-                        bat.x() + bat.width(), bat.y() + bat.height(),
-                        targetLeft,
-                        m_pos[0], m_pos[1], m_shape.radius());
+                                 collideX, collideY,
+                                 bat.x(), bat.y(),
+                                 bat.x() + bat.width(), bat.y() + bat.height(),
+                                 targetLeft,
+                                 m_pos[0], m_pos[1], m_shape.radius());
 
     if(result == COLLIDE_NOTHING) {
         return false;
     }
 
-    getNewSpeed(m_speedX, m_speedY, 
+    getNewSpeed(m_speedX, m_speedY,
                 result, m_pos[0], m_pos[1],
                 collideX, collideY);
 
@@ -168,6 +183,66 @@ bool Ball::collideRect(CollideImpact &impact,
 
     return true;
 }
+
+bool Ball::collideBoxMatrix(CollideImpact& impact, Box*& box,
+                            int& row, int& col, float timeDelta)
+{
+    int startRow, endRow, startCol, endCol;
+
+    if(!getCoveredBox(startRow, endRow, startCol, endCol, timeDelta)) {
+        return false;
+    }
+
+    bool collide = false, collide1;
+    BoxMatrix& matrix = m_game.boxMatrix();
+    Box *b;
+    CollideImpact impact1;
+
+    for(int r = startRow; r <= endRow; ++r) {
+        for(int c = startCol; c <= endCol; ++c) {
+            b = matrix.getBox(r, c);
+            if(b == nullptr) {
+                continue;
+            }
+
+            collide1 = collideRect(impact1, b->x(), b->y(),
+                                   b->right(), b->top(), timeDelta);
+
+            if(!collide1) {
+                continue;
+            }
+
+            if(!collide || impact1.m_collideTime < impact.m_collideTime) {
+                collide = true;
+                box = b;
+                row = r;
+                col = c;
+                impact = impact1;
+            }
+        }
+    }
+
+    return collide;
+}
+
+bool Ball::getCoveredBox(int& startRow, int& endRow,
+                         int& startCol, int& endCol,
+                         float timeDelta)
+{
+    float newX = m_pos[0] + m_speedX * timeDelta;
+    float newY = m_pos[1] + m_speedY * timeDelta;
+    float left = std::min(newX, m_pos[0]) - radius();
+    float right = std::max(newX, m_pos[0]) + radius();
+    float bottom = std::min(newY, m_pos[1]) - radius();
+    float top = std::max(newY, m_pos[1]) + radius();
+    BoxMatrix& matrix = m_game.boxMatrix();
+
+    bool covered = matrix.getCoverArea(startRow, endRow, startCol, endCol,
+                                       left, bottom, right, top);
+
+    return covered;
+}
+
 
 void Ball::getNewSpeed(float& speedX, float& speedY,
                        CollideResult result,

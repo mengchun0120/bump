@@ -32,7 +32,7 @@ public:
         return m_height;
     }
 
-    void update(float timeDelta);
+    void update(Queue& queue, float timeDelta);
 
     void present();
 
@@ -58,6 +58,11 @@ public:
     Ball& ball()
     {
         return m_ball;
+    }
+
+    BoxMatrix& boxMatrix()
+    {
+        return m_boxMatrix;
     }
 
 private:

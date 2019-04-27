@@ -9,6 +9,7 @@
 namespace bump {
 
 class Game;
+class Box;
 
 class Ball: public GameObject {
 public:
@@ -53,10 +54,17 @@ private:
                      float left, float bottom, float right, float top,
                      float timeDelta);
 
+    bool collideBoxMatrix(CollideImpact& impact, Box*& box,
+                          int& row, int& col, float timeDelta);
+
     void getNewSpeed(float& speedX, float& speedY,
                      CollideResult result,
                      float centerX, float centerY,
                      float collideX, float collideY);
+
+    bool getCoveredBox(int& startRow, int& endRow,
+                       int& startCol, int& endCol,
+                       float timeDelta);
 
 protected:
     Game& m_game;
