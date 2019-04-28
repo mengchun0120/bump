@@ -298,6 +298,78 @@ TEST(CircleCollideRect, CollideCase4)
     ASSERT_DOUBLE_EQ(collideY, 100.0f);
 }
 
+TEST(CircleCollideRect, CollideCase5)
+{
+    float left, bottom, right, top;
+    float centerX, centerY, radius = 10.0f;
+    float speedX, speedY;
+    float timeDelta;
+    float collideTime, newCenterX, newCenterY;
+    float collideX, collideY;
+    CollideResult result;
+
+    left = 146.0f;
+    bottom = 332.0f;
+    right = 226.0f;
+    top = 352.0f;
+    centerX = 133.447006f;
+    centerY = 328.715698f;
+    speedX = 199.828766f;
+    speedY = 8.274484f;
+    timeDelta = 0.0167042;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_NE(result, COLLIDE_NOTHING);
+
+    left = 64.0f;
+    bottom = 420.0f;
+    right = 144.0f;
+    top = 440.0f;
+    centerX = 150.190964f;
+    centerY = 450.015961;
+    speedX = 13.727730;
+    speedY = -199.528305;
+    timeDelta = 0.0167212;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_NE(result, COLLIDE_NOTHING);
+
+    left = 64.000000;
+    bottom = 376.000000;
+    right = 144.000000;
+    top = 396.000000;
+    centerX = 53.649460;
+    centerY = 372.840912;
+    speedX = 163.317032;
+    speedY = -115.445000;
+    timeDelta = 0.0167142;
+
+    result = circleCollideRect(collideTime,
+                            newCenterX, newCenterY,
+                            collideX, collideY,
+                            centerX, centerY, radius,
+                            speedX, speedY,
+                            left, bottom, right, top,
+                            timeDelta);
+
+    ASSERT_NE(result, COLLIDE_NOTHING);
+
+}
+
 TEST(CircleCollideRect, NotCollideCase1)
 {
     float left = 100.0f, bottom = 100.0f, right = 200.0f, top = 120.0f;

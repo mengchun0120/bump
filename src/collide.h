@@ -59,6 +59,9 @@ CollideResult rectCollideCircleHorizontal(float& newLeft,
                         float targetLeft,
                         float circleX, float circleY, float radius);
 
+bool circleIntersectRect(float centerX, float centerY, float radius,
+                         float left, float bottom, float right, float top);
+
 } // end of namespace bump
 
 #endif

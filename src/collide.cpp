@@ -1,4 +1,5 @@
 #include <cmath>
+#include "log.h"
 #include "collide.h"
 
 namespace bump {
@@ -151,15 +152,14 @@ CollideResult circleCollideTwoLines(float& collideTime,
         return COLLIDE_CONTAINED;
     }
 
-    float line;
     bool fromAbove;
 
     if(centerY > top) {
         fromAbove = true;
-        line = top;
+        collideLine = top;
     } else {
         fromAbove = false;
-        line = bottom;
+        collideLine = bottom;
     }
 
     float impactTime, impactX, impactY;
@@ -169,7 +169,7 @@ CollideResult circleCollideTwoLines(float& collideTime,
                                     impactX, impactY,
                                     centerX, centerY, radius,
                                     speedX, speedY,
-                                    left, right, line,
+                                    left, right, collideLine,
                                     fromAbove, timeDelta);
 
     if(ret == COLLIDE_NOTHING) {
@@ -183,7 +183,6 @@ CollideResult circleCollideTwoLines(float& collideTime,
         return COLLIDE_INTIME;
     }
 
-    collideLine = line;
     return ret;
 }
 
@@ -206,10 +205,6 @@ CollideResult circleCollideRect(float& collideTime,
                                     left, right, bottom, top,
                                     timeDelta);
 
-    if(horizontalResult == COLLIDE_NOTHING) {
-        return COLLIDE_NOTHING;
-    }
-
     if(horizontalResult == COLLIDE_INTIME) {
         return COLLIDE_HORIZONTAL;
     }
@@ -225,27 +220,20 @@ CollideResult circleCollideRect(float& collideTime,
                                     bottom, top, left, right,
                                     timeDelta);
 
-    if(verticalResult == COLLIDE_NOTHING) {
-        return COLLIDE_NOTHING;
-    }
-
     if(verticalResult == COLLIDE_INTIME) {
         return COLLIDE_VERTICAL;
     }
 
-    if(horizontalResult == COLLIDE_POTENTIAL &&
-       verticalResult == COLLIDE_POTENTIAL) {
-        bool ret = circleCollidePoint(collideTime,
-                                    newCenterX, newCenterY,
-                                    centerX, centerY, radius,
-                                    speedX, speedY,
-                                    verticalLine, horizontalLine,
-                                    timeDelta);
-        if(ret) {
-            collideX = verticalLine;
-            collideY = horizontalLine;
-            return COLLIDE_POINT;
-        }
+    bool ret = circleCollidePoint(collideTime,
+                                  newCenterX, newCenterY,
+                                  centerX, centerY, radius,
+                                  speedX, speedY,
+                                  verticalLine, horizontalLine,
+                                  timeDelta);
+    if(ret) {
+        collideX = verticalLine;
+        collideY = horizontalLine;
+        return COLLIDE_POINT;
     }
 
     return COLLIDE_NOTHING;
@@ -312,6 +300,31 @@ CollideResult rectCollideCircleHorizontal(float& newLeft,
     }
 
     return potentialResult;
+}
+
+bool circleIntersectRect(float centerX, float centerY, float radius,
+                         float left, float bottom, float right, float top)
+{
+    if(centerX >= left && centerX <= right &&
+       centerY >= bottom && centerY <= top) {
+        return true;
+    }
+
+    if(centerX < left || centerX > right) {
+        float dx = centerX < left ? left - centerX : centerX - right;
+        if(dx > radius) {
+            return false;
+        }
+
+        float delta = (float)sqrt(radius*radius - dx*dx);
+        return centerY - delta <= top && centerY + delta >= bottom;
+    }
+
+    if(centerY < bottom) {
+        return bottom - centerY <= radius;
+    }
+
+    return centerY - top <= radius;
 }
 
 } // end of namespace bump
