@@ -16,7 +16,9 @@ enum ConfigValueType {
     TYPE_STRING,
     TYPE_DOUBLE,
     TYPE_FLOAT,
-    TYPE_FLOAT_ARRAY
+    TYPE_FLOAT_ARRAY,
+    TYPE_STRING_ARRAiY,
+    TYPE_INT_ARRAY
 };
 
 struct ConfigItem {
@@ -78,6 +80,17 @@ void parseFloatArray(float *arr, const char *value)
     }
 }
 
+template <typename T>
+void parseArray(std::vector<T> *strArr, const char *value)
+{
+    std::istringstream iss(value);
+
+    while(!iss.eof()) {
+        strArr->emplace_back();
+        iss >> strArr->back();
+    }
+}
+
 void setValue(ConfigItem& item, const char *value)
 {
     switch(item.m_type) {
@@ -101,6 +114,14 @@ void setValue(ConfigItem& item, const char *value)
         parseFloatArray((float *)(item.m_mem), value);
         item.m_set = true;
         break;
+    case TYPE_STRING_ARRAY:
+        parseArray<std::string>((std::vector<std::string>*)(item.m_mem), value);
+        item.m_set = true;
+        break;
+    case TYPE_INT_ARRAY:
+        parseArray<int>((std::vector<int>*)(item.m_mem), value);
+        item.m_set = true;
+        break;
     }
 }
 
@@ -112,6 +133,21 @@ bool validateConfigItems(const std::vector<ConfigItem> items)
             LOG_ERROR("Parameter %s is required, but not set", items[i].m_name);
             return false;
         }
+    }
+
+    if(m_boxImages.size() == 0) {
+        LOG_ERROR("Invalid boxImages");
+        return false;
+    }
+
+    if(m_boxMaxLife.size() == 0) {
+        LOG_ERROR("Invalid boxMaxLife");
+        return false;
+    }
+
+    if(m_boxImages.size() != m_boxMaxLife.size()) {
+        LOG_ERROR("boxImages and boxMaxLife contain different number of items");
+        return false;
     }
 
     return true;
@@ -164,7 +200,13 @@ bool Config::load(const char* fileName)
         { "pointerEventPoolSize", TYPE_INT, &m_pointerEventPoolSize, true, false },
         { "batWidth", TYPE_FLOAT, &m_batWidth, true, false },
         { "batHeight", TYPE_FLOAT, &m_batHeight, true, false },
-        { "batColor", TYPE_FLOAT_ARRAY, m_batColor, true, false }
+        { "batColor", TYPE_FLOAT_ARRAY, m_batColor, true, false },
+        { "ballRadius", TYPE_FLOAT, &m_ballRadius, true, false},
+        { "ballImage", TYPE_STRING, &m_ballImage, true, false},
+        { "boxWidth", TYPE_FLOAT, &m_boxWidth, true, false},
+        { "boxHeight", TYPE_FLOAT, &m_boxHeight, true, false},
+        { "boxImages", TYPE_STRING_ARRAY, &m_boxImages, true, false},
+        { "boxMaxLife", TYPE_INT_ARRAY, &m_boxMaxLife, true, false}
     };
 
     FILE *fp = fopen(fileName, "r");

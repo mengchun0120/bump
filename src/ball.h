@@ -2,14 +2,14 @@
 #define INCLUDE_BALL
 
 #include "gameobject.h"
-#include "circle.h"
-#include "constants.h"
-#include "collide.h"
+#include "vertexarray.h"
+#include "texture.h"
 
 namespace bump {
 
 class Game;
 class Box;
+class Config;
 
 class Ball: public GameObject {
 public:
@@ -29,17 +29,18 @@ public:
         }
     };
 
-public:
+    bool init(const Config& cfg);
+
+    static float radius()
+    {
+        return k_radius;
+    }
+
     Ball(Game& game);
 
     virtual ~Ball();
 
     void init(float x, float y, float speed);
-
-    float radius() const
-    {
-        return m_shape.radius();
-    }
 
     virtual void draw(BumpShaderProgram& program);
 
@@ -67,11 +68,13 @@ private:
                        float timeDelta);
 
 protected:
+    static float k_radius;
+    static VertexArray k_va;
+    static Texture k_texture;
+
     Game& m_game;
-    Circle m_shape;
     float m_speed;
     float m_speedX, m_speedY;
-    float m_color[Constants::NUM_FLOATS_COLOR];
 };
 
 } // end of namespace bump

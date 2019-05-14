@@ -2,6 +2,7 @@
 #define INCLUDE_CONFIG
 
 #include <string>
+#include <vector>
 #include "constants.h"
 
 namespace bump {
@@ -24,6 +25,12 @@ public:
     float m_batWidth;
     float m_batHeight;
     float m_batColor[Constants::NUM_FLOATS_COLOR];
+    float m_ballRadius;
+    std::string m_ballImage;
+    float m_boxWidth;
+    float m_boxHeight;
+    std::vector<std::string> m_boxImages;
+    std::vector<int> m_boxMaxLife;
 
 private:
     Config(const char* fileName);

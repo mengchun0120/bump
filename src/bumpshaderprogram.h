@@ -8,7 +8,8 @@ namespace bump {
 
 class BumpShaderProgram: public ShaderProgram {
 public:
-    BumpShaderProgram(const std::string & vertexShaderFile, const std::string & fragShaderFile);
+    BumpShaderProgram(const std::string & vertexShaderFile,
+                      const std::string & fragShaderFile);
 
     virtual ~BumpShaderProgram();
 
@@ -24,6 +25,10 @@ public:
 
     void setColor(const float *color);
 
+    void setUseColor(bool use);
+
+    void setTexture(unsigned int textureId);
+
 protected:
     void loadParam();
 
@@ -33,6 +38,9 @@ protected:
     int m_viewportSizeLocation;
     int m_viewportOriginLocation;
     int m_colorLocation;
+    int m_useColorLocation;
+    int m_texPosLocation;
+    int m_textureLocation;
 };
 
 } // end of namespace bump

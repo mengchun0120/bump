@@ -1,27 +1,28 @@
 #ifndef INCLUDE_BOX
 #define INCLUDE_BOX
 
-#include "constants.h"
-#include "rectangle.h"
+#include <vector>
+#include "texture.h"
+#include "vertexarray.h"
 #include "gameobject.h"
 
 namespace bump {
 
+class Config;
+
 class Box: public GameObject {
 public:
-    static const unsigned int TYPE_COUNT = 4;
-
     static float width()
     {
-        return k_shape.width();
+        return k_width;
     }
 
     static float height()
     {
-        return k_shape.height();
+        return k_height;
     }
 
-    static void initShape();
+    static bool init(const Config& cfg);
 
     Box(float x, float y, int type);
 
@@ -31,12 +32,12 @@ public:
 
     float right() const
     {
-        return m_pos[0] + k_shape.width();
+        return m_pos[0] + k_width;
     }
 
     float top() const
     {
-        return m_pos[1] + k_shape.height();
+        return m_pos[1] + k_height;
     }
 
     bool onHit();
@@ -52,15 +53,17 @@ public:
     }
 
 private:
-    static Rectangle k_shape;
-    static float k_colors[TYPE_COUNT][Constants::NUM_FLOATS_COLOR];
-    static int k_maxLife[TYPE_COUNT];
+    static VertexArray k_va;
+    static std::vector<Texture> k_textures;
+    static float k_width;
+    static float k_height;
+    static std::vector<int> k_maxLife;
 
     int m_type;
     int m_life;
-    float m_color[Constants::NUM_FLOATS_COLOR];
 };
 
 } // end of namespace bump
 
 #endif
+

@@ -6,7 +6,8 @@
 
 namespace bump {
 
-BumpShaderProgram::BumpShaderProgram(const std::string& vertexShaderFile, const std::string& fragShaderFile)
+BumpShaderProgram::BumpShaderProgram(const std::string& vertexShaderFile,
+                                     const std::string& fragShaderFile)
 : ShaderProgram(vertexShaderFile, fragShaderFile)
 {
     loadParam();
@@ -24,6 +25,9 @@ void BumpShaderProgram::loadParam()
     m_viewportSizeLocation = glGetUniformLocation(m_program, "viewportSize");
     m_viewportOriginLocation = glGetUniformLocation(m_program, "viewportOrigin");
     m_colorLocation = glGetUniformLocation(m_program, "color");
+    m_useColorLocation = glGetUniformLocation(m_program, "useColor");
+    m_texPosLocation = glGetAttribLocation(m_program, "texPos");
+    m_textureLocation = glGetUniformLocation(m_program, "texture");
 }
 
 void BumpShaderProgram::setUseObjRef(bool enabled)
@@ -51,6 +55,18 @@ void BumpShaderProgram::setColor(const float* color)
     glUniform4fv(m_colorLocation, 1, color);
 }
 
+void BumpShaderProgram::setUseColor(bool use)
+{
+    glUniform1i(m_useColorLocation, use ? 1 : 0);
+}
+
+void BumpShaderProgram::setTexture(unsigned int textureId)
+{
+    glUniform1i(m_textureLocation, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+}
+
 void BumpShaderProgram::setPosition(const VertexArray& vertexArray)
 {
     glBindVertexArray(vertexArray.vao());
@@ -60,8 +76,17 @@ void BumpShaderProgram::setPosition(const VertexArray& vertexArray)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexArray.ebo());
     }
 
-    glVertexAttribPointer(m_positionLocation, Constants::NUM_FLOATS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glVertexAttribPointer(m_positionLocation, Constants::NUM_FLOATS_PER_POSITION,
+                          GL_FLOAT, GL_FALSE, vertexArray.stride(), (void *)0);
     glEnableVertexAttribArray(m_positionLocation);
+
+    if(vertexArray.hasTexCoord()) {
+        glVertexAttribPointer(m_texPosLocation, Constants::NUM_FLOATS_PER_TEXCOORD,
+                              GL_FLOAT, GL_FALSE, vertexArray.stride(),
+                              (void *)(Constants::POSITION_SIZE));
+        glEnableVertexAttribArray(m_texPosLocation);
+    }
 }
 
 } // end of namespace bump
+

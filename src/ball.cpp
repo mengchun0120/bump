@@ -8,11 +8,30 @@
 
 namespace bump {
 
+float Ball::k_radius;
+VertexArray Ball::k_va;
+Texture Ball::k_texture;
+
+bool Ball::init(const Config& cfg)
+{
+    k_radius = cfg.m_ballRadius;
+
+    if(!VertexArray::loadRectVertexArray(k_va, 2*k_radius, 2*k_radius)) {
+        LOG_ERROR("Failed to load VertexArray for Ball");
+        return false;
+    }
+
+    if(!k_texture.load(cfg.m_ballImage)) {
+        LOG_ERROR("Failed to load texture for Ball");
+        return false;
+    }
+
+    return true;
+}
+
 Ball::Ball(Game& game)
 : GameObject()
 , m_game(game)
-, m_shape(0.0f, 0.0f, 10.0f, 40)
-, m_color{0.0f, 1.0f, 0.0f, 1.0f}
 {
 }
 
@@ -34,7 +53,12 @@ void Ball::init(float x, float y, float speed)
 
 void Ball::draw(BumpShaderProgram& program)
 {
-    m_shape.draw(program, m_pos, m_color, nullptr, 0.0f);
+    program.setUseObjRef(true);
+    program.setObjRef(m_pos);
+    program.setPosition(k_va);
+    program.setTexture(k_texture.textureId());
+    program.setUseColor(false);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 }
 
 bool Ball::update(float timeDelta)
@@ -80,7 +104,7 @@ bool Ball::update(float timeDelta)
         }
     }
 
-    return m_pos[1] > -radius();
+    return m_pos[1] > -k_radius;
 }
 
 
@@ -93,7 +117,7 @@ bool Ball::collideBat(float& newLeft, float targetLeft)
                                  bat.x(), bat.y(),
                                  bat.x() + bat.width(), bat.y() + bat.height(),
                                  targetLeft,
-                                 m_pos[0], m_pos[1], m_shape.radius());
+                                 m_pos[0], m_pos[1], k_radius);
 
     if(result == COLLIDE_NOTHING) {
         return false;
@@ -110,12 +134,11 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 {
     float tx = m_pos[0];
     float ty = m_pos[1];
-    float radius = m_shape.radius();
     CollideResult result;
 
     result = circleCollideLine(impact.m_collideTime,
                                impact.m_newCenterX,
-                               tx, radius, m_speedX,
+                               tx, k_radius, m_speedX,
                                0, true,
                                timeDelta);
 
@@ -128,7 +151,7 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 
     result = circleCollideLine(impact.m_collideTime,
                                impact.m_newCenterX,
-                               tx, radius, m_speedX,
+                               tx, k_radius, m_speedX,
                                m_game.width(), false,
                                timeDelta);
 
@@ -141,7 +164,7 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 
     result = circleCollideLine(impact.m_collideTime,
                                impact.m_newCenterY,
-                               ty, radius, m_speedY,
+                               ty, k_radius, m_speedY,
                                m_game.height(), false,
                                timeDelta);
 
@@ -161,14 +184,13 @@ bool Ball::collideRect(CollideImpact &impact,
 {
     float tx = m_pos[0];
     float ty = m_pos[1];
-    float tradius = m_shape.radius();
     CollideResult result;
     float collideX, collideY;
 
     result = circleCollideRect(impact.m_collideTime,
                                impact.m_newCenterX, impact.m_newCenterY,
                                collideX, collideY,
-                               tx, ty, tradius,
+                               tx, ty, k_radius,
                                m_speedX, m_speedY,
                                left, bottom, right, top,
                                timeDelta);
@@ -231,10 +253,10 @@ bool Ball::getCoveredBox(int& startRow, int& endRow,
 {
     float newX = m_pos[0] + m_speedX * timeDelta;
     float newY = m_pos[1] + m_speedY * timeDelta;
-    float left = std::min(newX, m_pos[0]) - radius();
-    float right = std::max(newX, m_pos[0]) + radius();
-    float bottom = std::min(newY, m_pos[1]) - radius();
-    float top = std::max(newY, m_pos[1]) + radius();
+    float left = std::min(newX, m_pos[0]) - k_radius;
+    float right = std::max(newX, m_pos[0]) + k_radius;
+    float bottom = std::min(newY, m_pos[1]) - k_radius;
+    float top = std::max(newY, m_pos[1]) + k_radius;
     BoxMatrix& matrix = m_game.boxMatrix();
 
     bool covered = matrix.getCoverArea(startRow, endRow, startCol, endCol,

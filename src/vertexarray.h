@@ -1,27 +1,48 @@
 #ifndef INCLUDE_VERTEXARRAY
 #define INCLUDE_VERTEXARRAY
 
+#include "constants.h"
+
 namespace bump {
 
 class VertexArray {
 public:
+    static bool loadRectVertexArray(VertexArray& va, float width, float height);
+
     VertexArray();
 
     VertexArray(const float* vertices,
-                unsigned int numVertices,
+                unsigned int numVertices0,
+                bool hasTexCoord0,
                 const unsigned short* indices=nullptr,
-                unsigned int numIndices=0);
+                unsigned int numIndices0=0);
 
     virtual ~VertexArray();
 
     bool load(const float* vertices,
-              unsigned int numVertices,
+              unsigned int numVertices0,
+              bool hasTexCoord0,
               const unsigned short* indices=nullptr,
-              unsigned int numIndices=0);
+              unsigned int numIndices0=0);
 
     unsigned int numVertices() const
     {
         return m_numVertices;
+    }
+
+    bool hasTexCoord() const
+    {
+        return m_hasTexCoord;
+    }
+
+    unsigned int vertexSize() const
+    {
+        return m_vertexSize;
+    }
+
+    unsigned int stride() const
+    {
+        return m_stride;
     }
 
     unsigned int numIndices() const
@@ -48,6 +69,9 @@ protected:
     void destroy();
 
     unsigned int m_numVertices;
+    bool m_hasTexCoord;
+    unsigned int m_vertexSize;
+    unsigned int m_stride;
     unsigned int m_numIndices;
     unsigned int m_vao;
     unsigned int m_vbo;
