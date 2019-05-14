@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <cstring>
+#include <GL/glew.h>
 #include "log.h"
 #include "config.h"
 #include "game.h"
@@ -7,21 +8,36 @@
 
 namespace bump {
 
+float Bat::k_width;
+float Bat::k_height;
+VertexArray Bat::k_va;
+Texture Bat::k_texture;
+
+bool Bat::init(const Config& cfg)
+{
+    k_width = cfg.m_batWidth;
+    k_height = cfg.m_batHeight;
+
+    if(!VertexArray::loadRectVertexArray(k_va, k_width, k_height)) {
+        LOG_ERROR("Failed to load vertex array for Bat");
+        return false;
+    }
+
+    if(!k_texture.load(cfg.m_batImage)) {
+        LOG_ERROR("Failed to load texture for Bat");
+        return false;
+    }
+
+    return true;
+}
+
 Bat::Bat(Game& game)
 : GameObject()
 , m_game(game)
 {
-    Config& config = Config::getSingleton();
-
-    if(!m_shape.init(0.0f, 0.0f, config.m_batWidth, config.m_batHeight)) {
-        LOG_ERROR("Failed to initialize shape");
-        throw std::runtime_error("Failed to initialize shape");
-    }
-
-    m_xBound = m_game.width() - config.m_batWidth;
-    m_pos[0] = (m_game.width() - config.m_batWidth) / 2.0f;
+    m_xBound = m_game.width() - k_width;
+    m_pos[0] = (m_game.width() - k_width) / 2.0f;
     m_pos[1] = 0.0f;
-    memcpy(m_fillColor, config.m_batColor, sizeof(m_fillColor));
 }
 
 Bat::~Bat()
@@ -44,7 +60,12 @@ void Bat::move(float newX)
 
 void Bat::draw(BumpShaderProgram& program)
 {
-    m_shape.draw(program, m_pos, m_fillColor, nullptr, 0.0f);
+    program.setUseObjRef(true);
+    program.setObjRef(m_pos);
+    program.setUseColor(false);
+    program.setPosition(k_va);
+    program.setTexture(k_texture.textureId());
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 }
 
 } // end of namespace bump

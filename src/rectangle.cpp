@@ -34,7 +34,7 @@ bool Rectangle::init(float x, float y, float width, float height)
         x, y
     };
 
-    if(!load(vertices, 6, nullptr, 0)) {
+    if(!load(vertices, 6, false, nullptr, 0)) {
         return false;
     }
 

@@ -4,21 +4,23 @@
 #include <memory>
 #include "bumpshaderprogram.h"
 #include "timedeltasmoother.h"
+#include "inputmanager.h"
 #include "game.h"
 
 class GLFWwindow;
+class Config;
 
 namespace bump {
 
 class App {
 public:
-    static App& getSingleton();
-
-    static bool initSingleton();
+    App();
 
     ~App();
 
     bool run();
+
+    bool init(const Config& cfg);
 
     BumpShaderProgram& program()
     {
@@ -26,17 +28,14 @@ public:
     }
 
 private:
-    App();
 
-    bool init();
+    bool initWindow(const Config& cfg);
 
-    bool initWindow();
-
-    bool initOpenGL();
+    bool initOpenGL(const Config& cfg);
 
     void updateViewport();
 
-    void initGame();
+    void initGame(const Config& cfg);
 
 private:
     GLFWwindow* m_window;

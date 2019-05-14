@@ -9,11 +9,11 @@ namespace bump {
 
 class Config {
 public:
-    static Config& getSingleton();
-
-    static bool initSingleton(const char* fileName);
+    Config();
 
     ~Config();
+
+    bool load(const char* fileName);
 
 public:
     int m_width;
@@ -24,18 +24,13 @@ public:
     int m_pointerEventPoolSize;
     float m_batWidth;
     float m_batHeight;
-    float m_batColor[Constants::NUM_FLOATS_COLOR];
+    std::string m_batImage;
     float m_ballRadius;
     std::string m_ballImage;
     float m_boxWidth;
     float m_boxHeight;
     std::vector<std::string> m_boxImages;
     std::vector<int> m_boxMaxLife;
-
-private:
-    Config(const char* fileName);
-
-    bool load(const char* fileName);
 };
 
 } // end of namespace bump

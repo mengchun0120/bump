@@ -17,7 +17,7 @@ enum ConfigValueType {
     TYPE_DOUBLE,
     TYPE_FLOAT,
     TYPE_FLOAT_ARRAY,
-    TYPE_STRING_ARRAiY,
+    TYPE_STRING_ARRAY,
     TYPE_INT_ARRAY
 };
 
@@ -135,54 +135,13 @@ bool validateConfigItems(const std::vector<ConfigItem> items)
         }
     }
 
-    if(m_boxImages.size() == 0) {
-        LOG_ERROR("Invalid boxImages");
-        return false;
-    }
-
-    if(m_boxMaxLife.size() == 0) {
-        LOG_ERROR("Invalid boxMaxLife");
-        return false;
-    }
-
-    if(m_boxImages.size() != m_boxMaxLife.size()) {
-        LOG_ERROR("boxImages and boxMaxLife contain different number of items");
-        return false;
-    }
-
     return true;
 }
 
-std::shared_ptr<Config> g_config;
-
-Config& Config::getSingleton()
-{
-    return *g_config;
-}
-
-bool Config::initSingleton(const char* fileName)
-{
-    if(g_config) {
-        LOG_ERROR("Config already initialized");
-        return false;
-    }
-
-    try {
-        g_config.reset(new Config(fileName));
-        return true;
-    } catch(const std::exception& e) {
-        return false;
-    }
-}
-
-
-Config::Config(const char *fileName)
+Config::Config()
 : m_width(0)
 , m_height(0)
 {
-    if(!load(fileName)) {
-        throw std::runtime_error("Failed to load config");
-    }
 }
 
 Config::~Config()
@@ -200,7 +159,7 @@ bool Config::load(const char* fileName)
         { "pointerEventPoolSize", TYPE_INT, &m_pointerEventPoolSize, true, false },
         { "batWidth", TYPE_FLOAT, &m_batWidth, true, false },
         { "batHeight", TYPE_FLOAT, &m_batHeight, true, false },
-        { "batColor", TYPE_FLOAT_ARRAY, m_batColor, true, false },
+        { "batImage", TYPE_STRING, &m_batImage, true, false },
         { "ballRadius", TYPE_FLOAT, &m_ballRadius, true, false},
         { "ballImage", TYPE_STRING, &m_ballImage, true, false},
         { "boxWidth", TYPE_FLOAT, &m_boxWidth, true, false},
@@ -242,6 +201,21 @@ bool Config::load(const char* fileName)
         LOG_ERROR("Failed to read file %s", fileName);
         retVal = false;
     } else if(!validateConfigItems(items)) {
+        retVal = false;
+    }
+
+    if(m_boxImages.size() == 0) {
+        LOG_ERROR("Invalid boxImages");
+        retVal = false;
+    }
+
+    if(m_boxMaxLife.size() == 0) {
+        LOG_ERROR("Invalid boxMaxLife");
+        retVal = false;
+    }
+
+    if(m_boxImages.size() != m_boxMaxLife.size()) {
+        LOG_ERROR("boxImages and boxMaxLife contain different number of items");
         retVal = false;
     }
 

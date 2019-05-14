@@ -56,13 +56,15 @@ void BoxMatrix::init()
     srand(time(nullptr));
 
     float y = m_boxBottom;
+    const unsigned int TYPE_COUNT = Box::typeCount();
+
     m_boxCount = 0;
     for(unsigned int row = 0; row < NUM_ROWS; ++row) {
         float x = m_boxLeft;
         for(unsigned int col = 0; col < NUM_COLS; ++col) {
             int type = (int)((double)rand() /
-                             (double)RAND_MAX * Box::TYPE_COUNT);
-            if(type < Box::TYPE_COUNT) {
+                             (double)RAND_MAX * TYPE_COUNT);
+            if(type < TYPE_COUNT) {
                 m_boxes[row][col] = new Box(x, y, type);
                 m_boxCount++;
             } else {

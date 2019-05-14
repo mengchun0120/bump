@@ -22,6 +22,11 @@ public:
         return k_height;
     }
 
+    static unsigned int typeCount()
+    {
+        return k_maxLife.size();
+    }
+
     static bool init(const Config& cfg);
 
     Box(float x, float y, int type);

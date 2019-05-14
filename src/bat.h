@@ -2,7 +2,8 @@
 #define INCLUDE_BAT
 
 #include "gameobject.h"
-#include "rectangle.h"
+#include "vertexarray.h"
+#include "texture.h"
 
 namespace bump {
 
@@ -10,6 +11,18 @@ class Game;
 
 class Bat: public GameObject {
 public:
+    static bool init(const Config& cfg);
+
+    static float width()
+    {
+        return k_width;
+    }
+
+    static float height()
+    {
+        return k_height;
+    }
+
     Bat(Game& game);
 
     virtual ~Bat();
@@ -18,31 +31,24 @@ public:
 
     void move(float newX);
 
-    float width() const
-    {
-        return m_shape.width();
-    }
-
-    float height() const
-    {
-        return m_shape.height();
-    }
-
     float right() const
     {
-        return x() + m_shape.width();
+        return m_pos[0] + k_width;
     }
 
     float top() const
     {
-        return y() + m_shape.height();
+        return m_pos[1] + k_height;
     }
 
 protected:
+    static float k_width;
+    static float k_height;
+    static VertexArray k_va;
+    static Texture k_texture;
+
     Game& m_game;
     float m_xBound;
-    Rectangle m_shape;
-    float m_fillColor[Constants::NUM_FLOATS_COLOR];
 };
 
 } // end of namespace bump

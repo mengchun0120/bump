@@ -17,17 +17,18 @@ int main(int argc, char *argv[])
     }
     #endif
 
-    if(!bump::Config::initSingleton(argv[1])) {
+    bump::Config cfg;
+    if(!cfg.load(argv[1])) {
         LOG_ERROR("Failed to read config from %s", argv[1]);
         return 1;
     }
 
-    if(!bump::App::initSingleton()) {
+    bump::App app;
+    if(!app.init(cfg)) {
         LOG_ERROR("Failed to initialize App");
         return 1;
     }
 
-    bump::App& app = bump::App::getSingleton();
     if(!app.run()) {
         LOG_ERROR("Something wrong happened during App::run");
         return 1;

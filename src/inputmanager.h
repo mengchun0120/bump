@@ -12,7 +12,7 @@ class InputManager {
 public:
     static InputManager &singleton();
 
-    static void initSingleton(GLFWwindow *window);
+    static void initSingleton(GLFWwindow *window, unsigned int pointerEventPoolSize);
 
     virtual ~InputManager();
 

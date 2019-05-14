@@ -9,7 +9,7 @@ Polygon::Polygon()
 }
 
 Polygon::Polygon(const float *vertices, unsigned int numVertices)
-: VertexArray(vertices, numVertices)
+: VertexArray(vertices, numVertices, false, nullptr, 0)
 {
 }
 

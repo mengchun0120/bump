@@ -4,6 +4,7 @@
 #include "gameobject.h"
 #include "vertexarray.h"
 #include "texture.h"
+#include "collide.h"
 
 namespace bump {
 
@@ -29,7 +30,7 @@ public:
         }
     };
 
-    bool init(const Config& cfg);
+    static bool init(const Config& cfg);
 
     static float radius()
     {

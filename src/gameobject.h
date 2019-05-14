@@ -37,7 +37,7 @@ public:
     }
 
 protected:
-    float m_pos[Constants::NUM_FLOATS_PER_VERTEX];
+    float m_pos[Constants::NUM_FLOATS_PER_POSITION];
 };
 
 } // end of namespace bump

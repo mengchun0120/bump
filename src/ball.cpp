@@ -1,8 +1,10 @@
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
+#include <GL/glew.h>
 #include "ball.h"
 #include "box.h"
+#include "config.h"
 #include "game.h"
 #include "log.h"
 

@@ -26,10 +26,9 @@ InputManager &InputManager::singleton()
     return *k_inputManager;
 }
 
-void InputManager::initSingleton(GLFWwindow *window)
+void InputManager::initSingleton(GLFWwindow *window, unsigned int pointerEventPoolSize)
 {
-    const Config& config = Config::getSingleton();
-    k_inputManager.reset(new InputManager(window, config.m_pointerEventPoolSize));
+    k_inputManager.reset(new InputManager(window, pointerEventPoolSize));
 }
 
 InputManager::InputManager(GLFWwindow *window, unsigned int pointerEventPoolSize)

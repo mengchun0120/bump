@@ -31,7 +31,7 @@ bool Circle::init(float centerX, float centerY, float radius, unsigned int numVe
     const double PI = 3.14159265359;
     const double DELTA = 2.0 * PI / numVertices;
 
-    float vertices[Constants::NUM_FLOATS_PER_VERTEX * (numVertices+2)];
+    float vertices[Constants::NUM_FLOATS_PER_POSITION * (numVertices+2)];
     unsigned int i, j;
     double theta = 0;
 
@@ -43,7 +43,7 @@ bool Circle::init(float centerX, float centerY, float radius, unsigned int numVe
         theta += DELTA;
     }
 
-    return load(vertices, numVertices+2, nullptr, 0);
+    return load(vertices, numVertices+2, false, nullptr, 0);
 }
 
 } // end of namespace bump

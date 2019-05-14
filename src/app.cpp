@@ -3,45 +3,19 @@
 #include <GLFW/glfw3.h>
 #include "log.h"
 #include "config.h"
-#include "rectangle.h"
-#include "circle.h"
 #include "inputmanager.h"
+#include "ball.h"
+#include "bat.h"
 #include "box.h"
 #include "app.h"
 
 namespace bump {
-
-static std::shared_ptr<App> g_app;
-
-App& App::getSingleton()
-{
-    return *g_app;
-}
-
-bool App::initSingleton()
-{
-    if(g_app) {
-        LOG_ERROR("App singleton already initialized");
-        return false;
-    }
-
-    try {
-        g_app.reset(new App());
-        return true;
-    } catch(const std::exception& e) {
-        LOG_ERROR("Exception happened %s", e.what());
-        return false;
-    }
-}
 
 App::App()
 : m_window(nullptr)
 , m_program(nullptr)
 , m_game(nullptr)
 {
-    if(!init()) {
-        throw std::runtime_error("Failed to initialize App");
-    }
 }
 
 App::~App()
@@ -55,21 +29,19 @@ App::~App()
     }
 }
 
-bool App::init()
+bool App::init(const Config& cfg)
 {
-    if(!initWindow()) {
+    if(!initWindow(cfg)) {
         LOG_ERROR("Failed to initialize window");
         return false;
     }
 
-    if(!initOpenGL()) {
+    if(!initOpenGL(cfg)) {
         LOG_ERROR("Failed to initialize OpenGL");
         return false;
     }
 
-    InputManager::initSingleton(m_window);
-
-    initGame();
+    initGame(cfg);
 
     return true;
 }
@@ -77,8 +49,8 @@ bool App::init()
 bool App::run()
 {
     Queue queue;
-    InputManager& inputManager = InputManager::singleton();
     float delta;
+    InputManager& inputManager = InputManager::singleton();
 
     while(glfwWindowShouldClose(m_window) == 0) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -98,7 +70,7 @@ bool App::run()
     return true;
 }
 
-bool App::initWindow()
+bool App::initWindow(const Config& cfg)
 {
     LOG_INFO("Initializing window");
 
@@ -114,9 +86,8 @@ bool App::initWindow()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    Config& config = Config::getSingleton();
-
-    m_window = glfwCreateWindow(config.m_width, config.m_height, config.m_title.c_str(), NULL, NULL);
+    m_window = glfwCreateWindow(cfg.m_width, cfg.m_height, cfg.m_title.c_str(),
+                                NULL, NULL);
     if(m_window == nullptr){
         LOG_ERROR("Failed to open GLFW window");
         return false;
@@ -132,10 +103,12 @@ bool App::initWindow()
 
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
 
+    InputManager::initSingleton(m_window, cfg.m_pointerEventPoolSize);
+
     return true;
 }
 
-bool App::initOpenGL()
+bool App::initOpenGL(const Config& cfg)
 {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -143,9 +116,8 @@ bool App::initOpenGL()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     try {
-        Config& config = Config::getSingleton();
-        m_program.reset(new BumpShaderProgram(config.m_bumpVertexShaderFile,
-                                              config.m_bumpFragShaderFile));
+        m_program.reset(new BumpShaderProgram(cfg.m_bumpVertexShaderFile,
+                                              cfg.m_bumpFragShaderFile));
     } catch(const std::exception& e) {
         LOG_ERROR("Exception happened: %s", e.what());
         return false;
@@ -174,9 +146,12 @@ void App::updateViewport()
     m_program->setViewportOrigin(viewportOrigin);
 }
 
-void App::initGame()
+void App::initGame(const Config& cfg)
 {
-    Box::initShape();
+    Box::init(cfg);
+    Ball::init(cfg);
+    Bat::init(cfg);
+
     m_game = new Game(m_program, m_viewportWidth, m_viewportHeight);
     InputManager::singleton().start();
     m_deltaSmoother.start();

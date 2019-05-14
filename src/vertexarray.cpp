@@ -6,7 +6,7 @@
 
 namespace bump {
 
-bool VertexArray::createRectVertexArray(VertexArray& va, float width, float height)
+bool VertexArray::loadRectVertexArray(VertexArray& va, float width, float height)
 {
     float vertices[] = {
         0.0f, 0.0f, 0.0f, 0.0f,
@@ -15,7 +15,7 @@ bool VertexArray::createRectVertexArray(VertexArray& va, float width, float heig
         width, 0.0f, 1.0f, 0.0f
     };
 
-    unsigned short indices = {
+    unsigned short indices[] = {
         0, 1, 2,
         2, 3, 0
     };
