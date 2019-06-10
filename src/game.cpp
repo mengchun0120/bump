@@ -20,8 +20,8 @@ Game::Game(std::shared_ptr<BumpShaderProgram>& program, float width, float heigh
 , m_boxMatrix(*this)
 {
     float speed = 200.0f;
-    m_ball.init(width/2.0f,
-                m_bat.y() + m_bat.height() + m_ball.radius(),
+    m_ball.init(width/2.0f - Ball::radius(),
+                m_bat.y() + m_bat.height(),
                 speed);
 }
 

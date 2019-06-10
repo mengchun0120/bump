@@ -17,7 +17,6 @@ Texture Ball::k_texture;
 bool Ball::init(const Config& cfg)
 {
     k_radius = cfg.m_ballRadius;
-
     if(!VertexArray::loadRectVertexArray(k_va, 2*k_radius, 2*k_radius)) {
         LOG_ERROR("Failed to load VertexArray for Ball");
         return false;
@@ -67,12 +66,14 @@ bool Ball::update(float timeDelta)
 {
     CollideImpact finalImpact, impact;
     bool collide = false;
+    float cx = centerX();
+    float cy = centerY();
 
-    collide = collideBoundary(finalImpact, timeDelta);
+    collide = collideBoundary(finalImpact, cx, cy, timeDelta);
 
     const Bat& bat = m_game.bat();
-    if(collideRect(impact, bat.x(), bat.y(), bat.right(),
-                   bat.top(), timeDelta)) {
+    if(collideRect(impact, cx, cy, bat.x(), bat.y(), bat.right(), bat.top(),
+                   timeDelta)) {
 
         if(!collide || impact.m_collideTime < finalImpact.m_collideTime) {
             collide = true;
@@ -83,7 +84,8 @@ bool Ball::update(float timeDelta)
     Box* box = nullptr;
     int row, col;
 
-    if(collideBoxMatrix(impact, box, row, col, timeDelta)) {
+    if(collideBoxMatrix(impact, box, row, col, cx, cy, timeDelta)) {
+
         if(!collide || impact.m_collideTime < finalImpact.m_collideTime) {
             collide = true;
             finalImpact = impact;
@@ -94,8 +96,8 @@ bool Ball::update(float timeDelta)
         m_pos[0] += m_speedX * timeDelta;
         m_pos[1] += m_speedY * timeDelta;
     } else {
-        m_pos[0] = finalImpact.m_newCenterX;
-        m_pos[1] = finalImpact.m_newCenterY;
+        m_pos[0] = finalImpact.m_newCenterX - k_radius;
+        m_pos[1] = finalImpact.m_newCenterY - k_radius;
         m_speedX = finalImpact.m_newSpeedX;
         m_speedY = finalImpact.m_newSpeedY;
 
@@ -106,6 +108,8 @@ bool Ball::update(float timeDelta)
         }
     }
 
+    LOG_INFO("b %f %f %d", m_pos[0], m_pos[1], collide ? 1 : 0);
+
     return m_pos[1] > -k_radius;
 }
 
@@ -113,39 +117,38 @@ bool Ball::update(float timeDelta)
 bool Ball::collideBat(float& newLeft, float targetLeft)
 {
     float collideX, collideY;
+    float cx = centerX(), cy = centerY();
     const Bat& bat = m_game.bat();
     CollideResult result = rectCollideCircleHorizontal(newLeft,
                                  collideX, collideY,
-                                 bat.x(), bat.y(),
-                                 bat.x() + bat.width(), bat.y() + bat.height(),
+                                 bat.x(), bat.y(), bat.right(), bat.top(),
                                  targetLeft,
-                                 m_pos[0], m_pos[1], k_radius);
+                                 cx, cy, k_radius);
 
     if(result == COLLIDE_NOTHING) {
         return false;
     }
 
     getNewSpeed(m_speedX, m_speedY,
-                result, m_pos[0], m_pos[1],
+                result, cx, cy,
                 collideX, collideY);
 
     return true;
 }
 
-bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
+bool Ball::collideBoundary(CollideImpact& impact, float cx, float cy,
+                           float timeDelta)
 {
-    float tx = m_pos[0];
-    float ty = m_pos[1];
     CollideResult result;
 
     result = circleCollideLine(impact.m_collideTime,
                                impact.m_newCenterX,
-                               tx, k_radius, m_speedX,
+                               cx, k_radius, m_speedX,
                                0, true,
                                timeDelta);
 
     if(result == COLLIDE_INTIME) {
-        impact.m_newCenterY = ty + m_speedY * impact.m_collideTime;
+        impact.m_newCenterY = cy + m_speedY * impact.m_collideTime;
         impact.m_newSpeedX = -m_speedX;
         impact.m_newSpeedY = m_speedY;
         return true;
@@ -153,12 +156,12 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 
     result = circleCollideLine(impact.m_collideTime,
                                impact.m_newCenterX,
-                               tx, k_radius, m_speedX,
+                               cx, k_radius, m_speedX,
                                m_game.width(), false,
                                timeDelta);
 
     if(result == COLLIDE_INTIME) {
-        impact.m_newCenterY = ty + m_speedY * impact.m_collideTime;
+        impact.m_newCenterY = cy + m_speedY * impact.m_collideTime;
         impact.m_newSpeedX = -m_speedX;
         impact.m_newSpeedY = m_speedY;
         return true;
@@ -166,12 +169,12 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
 
     result = circleCollideLine(impact.m_collideTime,
                                impact.m_newCenterY,
-                               ty, k_radius, m_speedY,
+                               cy, k_radius, m_speedY,
                                m_game.height(), false,
                                timeDelta);
 
     if(result == COLLIDE_INTIME) {
-        impact.m_newCenterX = tx + m_speedX * impact.m_collideTime;
+        impact.m_newCenterX = cx + m_speedX * impact.m_collideTime;
         impact.m_newSpeedX = m_speedX;
         impact.m_newSpeedY = -m_speedY;
         return true;
@@ -180,19 +183,17 @@ bool Ball::collideBoundary(CollideImpact& impact, float timeDelta)
     return false;
 }
 
-bool Ball::collideRect(CollideImpact &impact,
+bool Ball::collideRect(CollideImpact &impact, float cx, float cy,
                        float left, float bottom, float right, float top,
                        float timeDelta)
 {
-    float tx = m_pos[0];
-    float ty = m_pos[1];
     CollideResult result;
     float collideX, collideY;
 
     result = circleCollideRect(impact.m_collideTime,
                                impact.m_newCenterX, impact.m_newCenterY,
                                collideX, collideY,
-                               tx, ty, k_radius,
+                               cx, cy, k_radius,
                                m_speedX, m_speedY,
                                left, bottom, right, top,
                                timeDelta);
@@ -209,11 +210,12 @@ bool Ball::collideRect(CollideImpact &impact,
 }
 
 bool Ball::collideBoxMatrix(CollideImpact& impact, Box*& box,
-                            int& row, int& col, float timeDelta)
+                            int& row, int& col, float cx, float cy,
+                            float timeDelta)
 {
     int startRow, endRow, startCol, endCol;
 
-    if(!getCoveredBox(startRow, endRow, startCol, endCol, timeDelta)) {
+    if(!getCoveredBox(startRow, endRow, startCol, endCol, cx, cy, timeDelta)) {
         return false;
     }
 
@@ -229,7 +231,7 @@ bool Ball::collideBoxMatrix(CollideImpact& impact, Box*& box,
                 continue;
             }
 
-            collide1 = collideRect(impact1, b->x(), b->y(),
+            collide1 = collideRect(impact1, cx, cy, b->x(), b->y(),
                                    b->right(), b->top(), timeDelta);
 
             if(!collide1) {
@@ -251,14 +253,15 @@ bool Ball::collideBoxMatrix(CollideImpact& impact, Box*& box,
 
 bool Ball::getCoveredBox(int& startRow, int& endRow,
                          int& startCol, int& endCol,
+                         float cx, float cy,
                          float timeDelta)
 {
-    float newX = m_pos[0] + m_speedX * timeDelta;
-    float newY = m_pos[1] + m_speedY * timeDelta;
-    float left = std::min(newX, m_pos[0]) - k_radius;
-    float right = std::max(newX, m_pos[0]) + k_radius;
-    float bottom = std::min(newY, m_pos[1]) - k_radius;
-    float top = std::max(newY, m_pos[1]) + k_radius;
+    float newX = cx + m_speedX * timeDelta;
+    float newY = cy + m_speedY * timeDelta;
+    float left = std::min(newX, cx) - k_radius;
+    float right = std::max(newX, cx) + k_radius;
+    float bottom = std::min(newY, cy) - k_radius;
+    float top = std::max(newY, cy) + k_radius;
     BoxMatrix& matrix = m_game.boxMatrix();
 
     bool covered = matrix.getCoverArea(startRow, endRow, startCol, endCol,

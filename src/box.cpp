@@ -22,9 +22,10 @@ bool Box::init(const Config& cfg)
         return false;
     }
 
-    for(auto it = cfg.m_boxImages.begin(); it != cfg.m_boxImages.end(); ++it) {
-        k_textures.emplace_back();
-        if(!k_textures.back().load(*it)) {
+    k_textures.resize(cfg.m_boxImages.size());
+    size_t numBoxes = k_textures.size();
+    for(size_t i = 0; i < numBoxes; ++i) {
+        if(!k_textures[i].load(cfg.m_boxImages[i])) {
             LOG_ERROR("Failed to initialize textures for Box");
             return false;
         }
@@ -70,5 +71,5 @@ bool Box::onHit()
     return m_life > 0;
 }
 
-} //i end of namespace bump
+} // end of namespace bump
 

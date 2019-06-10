@@ -49,15 +49,27 @@ public:
 
     bool collideBat(float& newLeft, float targetLeft);
 
-private:
-    bool collideBoundary(CollideImpact& impact, float timeDelta);
+    float centerX() const
+    {
+        return m_pos[0] + k_radius;
+    }
 
-    bool collideRect(CollideImpact& impact,
+    float centerY() const
+    {
+        return m_pos[1] + k_radius;
+    }
+
+private:
+    bool collideBoundary(CollideImpact& impact, float cx, float cy,
+                         float timeDelta);
+
+    bool collideRect(CollideImpact& impact, float cx, float cy,
                      float left, float bottom, float right, float top,
                      float timeDelta);
 
     bool collideBoxMatrix(CollideImpact& impact, Box*& box,
-                          int& row, int& col, float timeDelta);
+                          int& row, int& col, float cx, float cy,
+                          float timeDelta);
 
     void getNewSpeed(float& speedX, float& speedY,
                      CollideResult result,
@@ -66,6 +78,7 @@ private:
 
     bool getCoveredBox(int& startRow, int& endRow,
                        int& startCol, int& endCol,
+                       float cx, float cy,
                        float timeDelta);
 
 protected:

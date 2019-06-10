@@ -65,6 +65,11 @@ public:
         return m_boxMatrix;
     }
 
+    BumpShaderProgram& program()
+    {
+        return *m_program;
+    }
+
 private:
     void process_input(Queue& queue);
 
